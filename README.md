@@ -37,8 +37,9 @@ npm run dev
 
 * Add start:unattended command to `/etc/rc.local` or any startup script:
   ```sh
-  cd /home/pi/code/sunny-notification-bot
+  cd /path/to/sunny-notification-bot
   npm run start:unattended &
   cd -
   ```
+* If not working, check `/var/log/syslog`, or better yet `cat /var/log/syslog | grep -B 3 -A 3 sunny-notification-bot`
 * If git throws with "detected dubious ownership in repository", run `sudo git config --global --add safe.directory /path/to/sunny-notification-bot`
