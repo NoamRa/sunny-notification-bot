@@ -3,7 +3,7 @@ import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
 import { ALLOWED, BOT_TOKEN } from "./config.js";
-import { getSunnyRanges } from "./weather.js";
+import { getSunnyRanges, explainWeatherRange } from "./weather.js";
 import { withAuth } from "./withAuth.js";
 import { withinTheHour } from "./time-utils.js";
 

@@ -146,13 +146,13 @@ function sunnyRangeAnalyzer(weatherData) {
 
   weatherData.forEach((weatherItem, index) => {
     if (weatherItem.isSunny) {
-      currentRange.length += 1;
       if (currentRange.length === 0) {
         // beginning of sunny range :)
         currentRange.start = weatherItem;
       } else {
         // sunny range continues :D
       }
+      currentRange.length += 1;
     } else {
       // it's cloudy
       if (currentRange.length > 0) {
