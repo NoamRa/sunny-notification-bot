@@ -26,13 +26,19 @@ import { withAuth } from "./withAuth.js";
   //   ctx.reply("subscribing");
   // });
 
-  bot.command("f", withAuth(async (ctx) => {
-    ctx.reply(await todaysForecast());
-  }));
+  bot.command(
+    "f",
+    withAuth(async (ctx) => {
+      ctx.reply(await todaysForecast());
+    }),
+  );
 
-  bot.command("forecast", withAuth(async (ctx) => {
-    ctx.reply(await todaysForecast());
-  }));
+  bot.command(
+    "forecast",
+    withAuth(async (ctx) => {
+      ctx.reply(await todaysForecast());
+    }),
+  );
 
   // bot.command("me", (ctx) =>
   //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
