@@ -61,6 +61,7 @@ import { withinTheHour } from "./time-utils.js";
     });
   });
 
+  // check sunshine for next hour 5 minutes before the hour
   cron.schedule("55 7-16 * * *", async () => {
     const sunnyRanges = await getSunnyRanges();
     const nextSunnyRange = sunnyRanges.find((range) => {
