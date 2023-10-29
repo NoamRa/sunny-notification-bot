@@ -10,5 +10,5 @@ export const ALLOWED = dotenv
 if (!ALLOWED) {
   throw new Error("Missing ALLOWED in .env file");
 } else if (ALLOWED.length === 0) {
-  throw new Error("ALLOWED doesn't contain inside. Please fix .env file");
+  throw new Error("ALLOWED doesn't contain values. Please fix .env file");
 }
