@@ -1,10 +1,12 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween.js";
+import { getDate, getTime } from "./time-utils.js";
+
 dayjs.extend(isBetween);
 
 function getWeather() {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
-  const now = nowISO();
+  const now = getDate();
   const params = new URLSearchParams({
     latitude: 52.5167,
     longitude: 13.2833,
@@ -24,7 +26,7 @@ function getWeather() {
     .catch((err) => console.error({ err }));
 }
 
-export async function todaysForecast() {
+export async function getSunnyRanges() {
   const rawData = await getWeather();
 
   const sunrise = rawData.daily.sunrise[0];
@@ -46,8 +48,6 @@ export async function todaysForecast() {
     cloudCover: rawData.hourly.cloudcover,
     weatherCode: rawData.hourly.weathercode,
   }).filter(daytimeFilter);
-
-  // console.log({ minutely15Data, hourlyData });
 
   const weatherData = minutely15Data
     .map((minutelyItem) => {
@@ -71,20 +71,19 @@ export async function todaysForecast() {
       const score = scoreWeather(item);
       return {
         datetime: time,
-        date: dayjs(time).format("YYYY-MM-DD"),
-        time: dayjs(time).format("HH:mm"), // overriding the original time field. That's why it was cloned to datetime
+        date: getDate(time),
+        time: getTime(time), // overriding the original time field. That's why it was cloned to datetime
         ...item,
         weatherDescription: WEATHER_CODE[item.weatherCode],
         score,
         isSunny: isSunny(score),
       };
     });
-
   const sunnyRanges = sunnyRangeAnalyzer(weatherData).filter(
     ({ length }) => length >= 2,
   );
 
-  return explainWeatherRanges(sunnyRanges);
+  return sunnyRanges;
 }
 
 function scoreWeather({ directRadiation, directNormalIrradiance, cloudCover }) {
@@ -108,10 +107,6 @@ function isSunny(score) {
 }
 
 // #region utils
-function nowISO() {
-  return dayjs().format("YYYY-MM-DD");
-}
-
 function mapTimes(times, fields) {
   const fieldKeys = Object.keys(fields);
   return times.map((time, idx) => ({
@@ -151,13 +146,13 @@ function sunnyRangeAnalyzer(weatherData) {
 
   weatherData.forEach((weatherItem, index) => {
     if (weatherItem.isSunny) {
-      currentRange.length += 1;
       if (currentRange.length === 0) {
         // beginning of sunny range :)
         currentRange.start = weatherItem;
       } else {
         // sunny range continues :D
       }
+      currentRange.length += 1;
     } else {
       // it's cloudy
       if (currentRange.length > 0) {
@@ -173,18 +168,8 @@ function sunnyRangeAnalyzer(weatherData) {
   return results;
 }
 
-function explainWeatherRange(weatherRange) {
+export function explainWeatherRange(weatherRange) {
   return `${weatherRange.start.time} -> ${weatherRange.end.time} (${weatherRange.start.weatherDescription})`;
-}
-
-function explainWeatherRanges(sunnyRanges) {
-  if (sunnyRanges.length === 0)
-    return "The sun is not expected to make a meaningful appearance.";
-
-  return [
-    "Expecting sunny time at:",
-    ...sunnyRanges.map(explainWeatherRange),
-  ].join("\n");
 }
 
 const WEATHER_CODE = {

@@ -16,6 +16,7 @@
   "dependencies": {
     "dayjs": "1.11.10",
     "dotenv": "16.3.1",
+    "node-cron": "3.0.2",
     "telegraf": "4.14.0"
   },
   "devDependencies": {
