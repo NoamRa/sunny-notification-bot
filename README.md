@@ -41,4 +41,4 @@ npm run dev
   npm run start:unattended &
   cd -
   ```
-* If git throws with "detected dubious ownership in repository", run `sudo git config --global --add safe.directory /path/to/sunny-notification-bot
+* If git throws with "detected dubious ownership in repository", run `sudo git config --global --add safe.directory /path/to/sunny-notification-bot`
