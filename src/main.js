@@ -2,6 +2,7 @@ import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 import { BOT_TOKEN } from "./config.js";
 import { todaysForecast } from "./weather.js";
+import { withAuth } from "./withAuth.js";
 
 (async function main() {
   const bot = new Telegraf(BOT_TOKEN);
@@ -25,13 +26,13 @@ import { todaysForecast } from "./weather.js";
   //   ctx.reply("subscribing");
   // });
 
-  bot.command("f", async (ctx) => {
+  bot.command("f", withAuth(async (ctx) => {
     ctx.reply(await todaysForecast());
-  });
+  }));
 
-  bot.command("forecast", async (ctx) => {
+  bot.command("forecast", withAuth(async (ctx) => {
     ctx.reply(await todaysForecast());
-  });
+  }));
 
   // bot.command("me", (ctx) =>
   //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
