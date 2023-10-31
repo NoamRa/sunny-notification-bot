@@ -10,7 +10,7 @@ export function withAuth(fn) {
     const user = ctx.update.message.from;
     if (!ALLOWED.includes(user.id)) {
       return ctx.reply(
-        `I'm sorry, ${user.first_name}, I'm afraid I can't do that. 🛑`,
+        `I'm sorry, ${user.first_name} (${user.id}), I'm afraid I can't do that. 🛑`,
       );
     }
 
