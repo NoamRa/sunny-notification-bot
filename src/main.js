@@ -46,38 +46,50 @@ import { withinTheHour } from "./time-utils.js";
   // #region cron
 
   // morning schedule
-  cron.schedule("* 8 * * *", async () => {
-    const sunnyRanges = await getSunnyRanges();
-    const message =
-      sunnyRanges.length === 0
-        ? "the sun is not expected to make a meaningful appearance today."
-        : [
-            "expect sunny times at:",
-            ...sunnyRanges.map(explainWeatherRange),
-          ].join("\n");
+  cron.schedule(
+    "* 8 * * *",
+    async () => {
+      const sunnyRanges = await getSunnyRanges();
+      const message =
+        sunnyRanges.length === 0
+          ? "the sun is not expected to make a meaningful appearance today."
+          : [
+              "expect sunny times at:",
+              ...sunnyRanges.map(explainWeatherRange),
+            ].join("\n");
 
-    ALLOWED.forEach((userId) => {
-      bot.telegram.sendMessage(userId, `Good morning, ${message}`);
-    });
-  });
+      ALLOWED.forEach((userId) => {
+        bot.telegram.sendMessage(userId, `Good morning, ${message}`);
+      });
+    },
+    {
+      timezone: "Europe/Berlin",
+    },
+  );
 
   // check sunshine for next hour 5 minutes before the hour
-  cron.schedule("55 7-16 * * *", async () => {
-    const sunnyRanges = await getSunnyRanges();
-    const nextSunnyRange = sunnyRanges.find((range) => {
-      return withinTheHour(range.start.datetime);
-    });
-    if (nextSunnyRange) {
-      ALLOWED.forEach((userId) => {
-        bot.telegram.sendMessage(
-          userId,
-          `Expecting sunshine within the hour: ${explainWeatherRange(
-            nextSunnyRange,
-          )}`,
-        );
+  cron.schedule(
+    "55 7-16 * * *",
+    async () => {
+      const sunnyRanges = await getSunnyRanges();
+      const nextSunnyRange = sunnyRanges.find((range) => {
+        return withinTheHour(range.start.datetime);
       });
-    }
-  });
+      if (nextSunnyRange) {
+        ALLOWED.forEach((userId) => {
+          bot.telegram.sendMessage(
+            userId,
+            `Expecting sunshine within the hour: ${explainWeatherRange(
+              nextSunnyRange,
+            )}`,
+          );
+        });
+      }
+    },
+    {
+      timezone: "Europe/Berlin",
+    },
+  );
 
   // #endregion
 
