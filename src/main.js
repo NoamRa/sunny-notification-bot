@@ -1,14 +1,19 @@
+import path from "node:path";
 import cron from "node-cron";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
-import { ALLOWED, BOT_TOKEN } from "./config.js";
+import { BOT_TOKEN } from "./config.js";
+import { DB, createUsersDAO } from "./db/index.js";
 import { getSunnyRanges, explainWeatherRange } from "./weather.js";
 import { withAuth } from "./withAuth.js";
 import { withinTheHour } from "./time-utils.js";
 
 (async function main() {
   const bot = new Telegraf(BOT_TOKEN);
+
+  const db = await DB(path.join(path.resolve(), "db.json"));
+  const usersDao = await createUsersDAO(db);
 
   bot.start((ctx) =>
     ctx.reply(
@@ -20,14 +25,26 @@ import { withinTheHour } from "./time-utils.js";
     ctx.reply(
       [
         "/forecast or /f for today's sunny times 🌤",
-        // "/subscribe to notification"
+        "/subscribe to notifications",
       ].join("\n"),
     ),
   );
 
-  // bot.command("subscribe", async (ctx) => {
-  //   ctx.reply("subscribing");
-  // });
+  bot.command(
+    "subscribe",
+    withAuth(async (ctx) => {
+      const user = await usersDao.createUser(
+        ctx.message.from.id,
+        ctx.message.from.username,
+        ctx.message.from.first_name,
+      );
+
+      const message = user
+        ? `Success! ${user.displayName} (${user.id}) has been subscribed. You will get sunny notifications!`
+        : `User ${ctx.message.from.first_name} is already subscribed`;
+      ctx.reply(message);
+    }),
+  );
 
   async function forecast(ctx) {
     const sunnyRanges = await getSunnyRanges();
@@ -47,7 +64,7 @@ import { withinTheHour } from "./time-utils.js";
 
   // morning schedule
   cron.schedule(
-    "* 8 * * *",
+    "0 8 * * *",
     async () => {
       const sunnyRanges = await getSunnyRanges();
       const message =
@@ -57,9 +74,9 @@ import { withinTheHour } from "./time-utils.js";
               "expect sunny times at:",
               ...sunnyRanges.map(explainWeatherRange),
             ].join("\n");
-
-      ALLOWED.forEach((userId) => {
-        bot.telegram.sendMessage(userId, `Good morning, ${message}`);
+      const users = await usersDao.getUsers();
+      users.forEach((user) => {
+        bot.telegram.sendMessage(user.id, `Good morning, ${message}`);
       });
     },
     {
@@ -76,9 +93,10 @@ import { withinTheHour } from "./time-utils.js";
         return withinTheHour(range.start.datetime);
       });
       if (nextSunnyRange) {
-        ALLOWED.forEach((userId) => {
+        const users = await users.getUsers();
+        users.forEach((user) => {
           bot.telegram.sendMessage(
-            userId,
+            user.id,
             `Expecting sunshine within the hour: ${explainWeatherRange(
               nextSunnyRange,
             )}`,
