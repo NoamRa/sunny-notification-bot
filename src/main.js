@@ -25,7 +25,7 @@ import { withinTheHour } from "./time-utils.js";
     ctx.reply(
       [
         "/forecast or /f for today's sunny times 🌤",
-        "/subscribe to notification",
+        "/subscribe to notifications",
       ].join("\n"),
     ),
   );
