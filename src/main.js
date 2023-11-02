@@ -1,15 +1,18 @@
-import path from "node:path";
 import cron from "node-cron";
+import path from "node:path";
+import process from "node:process";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
-import { getSunnyRanges, explainWeatherRange } from "./weather.js";
-import { withAuth } from "./withAuth.js";
+import { logger } from "./logger.js";
 import { withinTheHour } from "./time-utils.js";
+import { explainWeatherRange, getSunnyRanges } from "./weather.js";
+import { withAuth } from "./withAuth.js";
 
-(async function main() {
+logger.info("Starting Sunny notification bot");
+async function main() {
   const bot = new Telegraf(BOT_TOKEN);
 
   const db = await DB(path.join(path.resolve(), "db.json"));
@@ -124,8 +127,17 @@ import { withinTheHour } from "./time-utils.js";
   bot.launch();
 
   // Enable graceful stop
-  process.once("SIGINT", () => bot.stop("SIGINT"));
-  process.once("SIGTERM", () => bot.stop("SIGTERM"));
+  process.once("SIGINT", () => {
+    bot.stop("SIGINT");
+    logger.info("Bot stopped on SIGINT");
+    process.exit(0);
+  });
+  process.once("SIGTERM", () => {
+    bot.stop("SIGTERM");
+    logger.info("Bot stopped on SIGTERM");
+    process.exit(0);
+  });
 
-  console.log("Sunny Notification Bot listening...");
-})();
+  logger.info("Sunny Notification Bot listening...");
+}
+main();
