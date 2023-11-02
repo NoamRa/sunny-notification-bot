@@ -17,7 +17,8 @@
     "dayjs": "1.11.10",
     "dotenv": "16.3.1",
     "node-cron": "3.0.2",
-    "telegraf": "4.14.0"
+    "telegraf": "4.14.0",
+    "winston": "3.11.0"
   },
   "devDependencies": {
     "nodemon": "2.0.20"
