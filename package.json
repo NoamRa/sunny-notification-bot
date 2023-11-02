@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon ./src/main.js",
-    "start": "node ./src/main.js",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=256 node ./src/main.js",
     "start:unattended": "git pull origin main && npm ci && npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
