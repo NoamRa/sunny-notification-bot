@@ -1,3 +1,5 @@
+import { logger } from "./logger.js";
+
 export async function createUsersDAO(DB) {
   const entryKey = "USERS";
 
@@ -8,8 +10,7 @@ export async function createUsersDAO(DB) {
       DB.overwriteEntry(entryKey, []);
     }
   } catch (err) {
-    console.error("Error in UsersDAO init:");
-    console.error(err);
+    logger.error("Error in UsersDAO init: ", err);
   }
 
   async function getUsers() {
@@ -19,7 +20,7 @@ export async function createUsersDAO(DB) {
   async function createUser(id, username, displayName) {
     const users = await getUsers();
     if (users.find((user) => user.id === id)) {
-      console.error(`Error: user with id ${id} already exists.`);
+      logger.error(`Error: user with id ${id} already exists.`);
       return false;
     }
     const newUser = { id, username, displayName };

@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { logger } from "./logger.js";
 
 export async function DB(dbPath) {
   // basic functions
@@ -29,7 +30,7 @@ export async function DB(dbPath) {
 
   function entryKeyValid(entryKey) {
     if (typeof entryKey !== "string" && entryKey !== "") {
-      console.warn(`Warning: invalid entry key ${entryKey}`);
+      logger.warn(`Invalid entry key ${entryKey}`);
       return false;
     }
     return true;
