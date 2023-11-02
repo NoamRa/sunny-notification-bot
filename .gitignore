@@ -2,3 +2,5 @@
 node_modules
 
 db.json
+combined.log
+error.log

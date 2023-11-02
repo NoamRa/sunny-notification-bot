@@ -5,8 +5,8 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon ./src/main.js",
-    "start": "node ./src/main.js",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=256 nodemon ./src/main.js",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=256 node ./src/main.js",
     "start:unattended": "git pull origin main && npm ci && npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,10 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cross-env": "7.0.3",
     "dayjs": "1.11.10",
     "dotenv": "16.3.1",
     "node-cron": "3.0.2",
-    "telegraf": "4.14.0"
+    "telegraf": "4.14.0",
+    "winston": "3.11.0"
   },
   "devDependencies": {
     "nodemon": "2.0.20"

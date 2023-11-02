@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween.js";
+import { logger } from "./logger.js";
 import { getDate, getTime } from "./time-utils.js";
 
 dayjs.extend(isBetween);
@@ -23,7 +24,7 @@ function getWeather() {
 
   return fetch(`${url}?${params.toString()}`)
     .then((res) => res.json())
-    .catch((err) => console.error({ err }));
+    .catch(logger.error);
 }
 
 export async function getSunnyRanges() {
@@ -56,7 +57,7 @@ export async function getSunnyRanges() {
       );
       if (!hourlyItem) {
         // shouldn't happen
-        console.error(
+        logger.error(
           `Failed to find hourly item for ${JSON.stringify(minutelyItem)}`,
         );
       }
