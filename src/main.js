@@ -18,24 +18,24 @@ async function main() {
   const db = await DB(path.join(path.resolve(), "db.json"));
   const usersDao = await createUsersDAO(db);
 
-  bot.start((ctx) =>
+  bot.start(function start(ctx) {
     ctx.reply(
       "Hi, I'm Sunny Notification Bot. 👋🏼\nType /help for list of commands.",
-    ),
-  );
+    );
+  });
 
-  bot.help((ctx) =>
+  bot.help(function help(ctx) {
     ctx.reply(
       [
         "/forecast or /f for today's sunny times 🌤",
         "/subscribe to notifications",
       ].join("\n"),
-    ),
-  );
+    );
+  });
 
   bot.command(
     "subscribe",
-    withAuth(async (ctx) => {
+    withAuth(async function subscribe(ctx) {
       const user = await usersDao.createUser(
         ctx.message.from.id,
         ctx.message.from.username,
@@ -68,7 +68,7 @@ async function main() {
   // morning schedule
   cron.schedule(
     "0 8 * * *",
-    async () => {
+    async function morningSchedule() {
       const sunnyRanges = await getSunnyRanges();
       const message =
         sunnyRanges.length === 0
@@ -90,7 +90,7 @@ async function main() {
   // check sunshine for next hour 5 minutes before the hour
   cron.schedule(
     "55 7-16 * * *",
-    async () => {
+    async function hourlySchedule() {
       const sunnyRanges = await getSunnyRanges();
       const nextSunnyRange = sunnyRanges.find((range) => {
         return withinTheHour(range.start.datetime);
@@ -118,8 +118,8 @@ async function main() {
   //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
   // );
 
-  bot.on(message("text"), async (ctx) => {
-    await ctx.reply(
+  bot.on(message("text"), function textMessage(ctx) {
+    ctx.reply(
       `Hello ${ctx.message.from.username}. I'm not sure what does '${ctx.message.text}' means...`,
     );
   });
@@ -127,12 +127,12 @@ async function main() {
   bot.launch();
 
   // Enable graceful stop
-  process.once("SIGINT", () => {
+  process.once("SIGINT", function handleSIGINT() {
     bot.stop("SIGINT");
     logger.info("Bot stopped on SIGINT");
     process.exit(0);
   });
-  process.once("SIGTERM", () => {
+  process.once("SIGTERM", function handleSIGTERM() {
     bot.stop("SIGTERM");
     logger.info("Bot stopped on SIGTERM");
     process.exit(0);

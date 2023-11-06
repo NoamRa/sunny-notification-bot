@@ -29,11 +29,14 @@ export const logger = winston.createLogger({
   ],
 });
 
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
-});
+process.on(
+  "unhandledRejection",
+  function handleUnhandledRejection(reason, promise) {
+    logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+  },
+);
 
-process.on("uncaughtException", (error) => {
+process.on("uncaughtException", function handleUncaughtException(error) {
   logger.error("There was an uncaught exception: ", error);
   logger.on("finish", () => {
     process.exit(1);

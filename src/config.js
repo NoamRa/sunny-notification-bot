@@ -5,7 +5,7 @@ export const BOT_TOKEN = dotenv.config().parsed.BOT_TOKEN.trim();
 export const ALLOWED = dotenv
   .config()
   .parsed.ALLOWED.split(",")
-  .map((user) => parseInt(user.trim()))
+  .map((user) => Number(user.trim()))
   .filter(Boolean);
 if (!ALLOWED) {
   throw new Error("Missing ALLOWED in .env file");
