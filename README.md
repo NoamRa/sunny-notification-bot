@@ -1,7 +1,6 @@
 # Sunny Notification Bot
 
-Telegram bot that notifies when it's sunny
-https://t.me/SunnyNotificationBot
+Telegram bot that notifies when it's sunny https://t.me/SunnyNotificationBot
 
 ### Run
 
@@ -35,11 +34,23 @@ npm run dev
 
 #### Steps to run attended
 
-* Add start:unattended command to `/etc/rc.local` or any startup script:
+- Add start:unattended command to `/etc/rc.local` or any startup script:
   ```sh
   cd /path/to/sunny-notification-bot
   npm run start:unattended &
   cd -
   ```
-* If not working, check `/var/log/syslog`, or better yet `cat /var/log/syslog | grep -B 3 -A 3 sunny-notification-bot`
-* If git throws with "detected dubious ownership in repository", run `sudo git config --global --add safe.directory /path/to/sunny-notification-bot`
+- If not working, check `/var/log/syslog`, or better yet
+  `cat /var/log/syslog | grep -B 3 -A 3 sunny-notification-bot`
+- If git throws with "detected dubious ownership in repository", run
+  `sudo git config --global --add safe.directory /path/to/sunny-notification-bot`
+
+#### Remote debugging
+
+- Configure target on [chrome://inspect/#devices](chrome://inspect/#devices) to
+  match server's IP address ex: `192.168.0.123:9229`.
+- Use the `inspect` option with `0.0.0.0:9229` as host:
+  ```sh
+  node --inspect=0.0.0.0:9229 --max-old-space-size=abc ./src/main.js
+  ```
+- Server should appear as remote target. Click inspect to open Chrome DevTools.
