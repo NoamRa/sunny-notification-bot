@@ -5,9 +5,9 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=256 nodemon ./src/main.js",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=128 nodemon ./src/main.js",
     "lint": "eslint src",
-    "start": "cross-env NODE_OPTIONS=--max-old-space-size=256 node ./src/main.js",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=128 node ./src/main.js",
     "start:unattended": "git pull origin main && npm ci && npm start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
