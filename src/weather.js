@@ -1,9 +1,7 @@
 import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween.js";
-import { logger } from "./logger.js";
-import { getDate, getTime } from "./time-utils.js";
 
-dayjs.extend(isBetween);
+import { logger } from "./logger.js";
+import { getDate, getTime, isDaytime } from "./time-utils.js";
 
 function getWeather() {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
@@ -121,8 +119,7 @@ function mapTimes(times, fields) {
 
 function daytimeFilterGenerator(sunrise, sunset, getter = (date) => date) {
   return function daytimeFilter(date) {
-    // inclusive before and after https://day.js.org/docs/en/plugin/is-between
-    return dayjs(getter(date)).isBetween(sunrise, sunset, "hour", "[]");
+    return isDaytime(sunrise, sunset, getter(date));
   };
 }
 
