@@ -10,7 +10,7 @@ export async function createUsersDAO(DB) {
       DB.overwriteEntry(entryKey, []);
     }
   } catch (err) {
-    logger.error("Error in UsersDAO init: ", err);
+    logger.error(`Error in UsersDAO init: ${serialize(err)}`);
   }
 
   async function getUsers() {
