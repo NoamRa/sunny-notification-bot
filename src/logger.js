@@ -57,5 +57,5 @@ export function serialize(something) {
   } else if (something instanceof Promise) {
     return "Can't serialize a promise";
   }
-  return JSON.stringify(item);
+  return JSON.stringify(something);
 }
