@@ -47,7 +47,7 @@ process.on("uncaughtException", function handleUncaughtException(error) {
   });
 });
 
-function serialize(something) {
+export function serialize(something) {
   if (something instanceof Date) {
     return something.toISOString();
   } else if (something instanceof Error) {
