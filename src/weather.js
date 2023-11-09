@@ -3,9 +3,9 @@ import dayjs from "dayjs";
 import { logger } from "./logger.js";
 import { getDate, getTime, isDaytime } from "./time-utils.js";
 
-function getWeather() {
+function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
-  const now = getDate();
+  const d = getDate(date);
   const params = new URLSearchParams({
     latitude: 52.5167,
     longitude: 13.2833,
@@ -16,8 +16,8 @@ function getWeather() {
       "direct_normal_irradiance_instant",
     ].join(","),
     timezone: "Europe/Berlin",
-    start_date: now,
-    end_date: now,
+    start_date: d,
+    end_date: d,
   });
 
   return fetch(`${url}?${params.toString()}`)
@@ -25,8 +25,8 @@ function getWeather() {
     .catch(logger.error);
 }
 
-export async function getSunnyRanges() {
-  const rawData = await getWeather();
+export async function getSunnyRanges(date) {
+  const rawData = await getWeather(date);
 
   const sunrise = rawData.daily.sunrise[0];
   const sunset = rawData.daily.sunset[0];

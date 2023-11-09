@@ -7,7 +7,7 @@ import { message } from "telegraf/filters";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
-import { withinTheHour } from "./time-utils.js";
+import { dateIsValid, tomorrow, withinTheHour } from "./time-utils.js";
 import { lines } from "./utils.js";
 import { explainWeatherRange, getSunnyRanges } from "./weather.js";
 import { withAuth } from "./withAuth.js";
@@ -33,6 +33,7 @@ async function main() {
       lines(
         "/forecast or /f for today's sunny times 🌤",
         "/subscribe to notifications",
+        "Protip: try '/forecast tomorrow' or '/f t",
       ),
     );
   });
@@ -54,10 +55,24 @@ async function main() {
   );
 
   async function forecast(ctx) {
+    const forecastDate = ["tomorrow", "t", "tmw", "tmrw"].some(
+      (s) => s === ctx.payload,
+    )
+      ? tomorrow()
+      : ctx.payload;
+    if (forecastDate && !dateIsValid(forecastDate)) {
+      ctx.reply(
+        `I can't understand which date you want forecast when you say '${forecastDate}'`,
+      );
+      return;
+    }
+
     const sunnyRanges = await getSunnyRanges();
     const message =
       sunnyRanges.length === 0
-        ? "The sun is not expected to make a meaningful appearance today."
+        ? `The sun is not expected to make a meaningful appearance ${
+            forecastDate ? `on ${forecastDate}` : "today"
+          }.`
         : lines(
             "Expect sunny times at:",
             ...sunnyRanges.map(explainWeatherRange),
