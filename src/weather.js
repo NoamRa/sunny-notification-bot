@@ -1,13 +1,11 @@
 import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween.js";
+
 import { logger } from "./logger.js";
-import { getDate, getTime } from "./time-utils.js";
+import { getDate, getTime, isDaytime } from "./time-utils.js";
 
-dayjs.extend(isBetween);
-
-function getWeather() {
+function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
-  const now = getDate();
+  const d = getDate(date);
   const params = new URLSearchParams({
     latitude: 52.5167,
     longitude: 13.2833,
@@ -18,8 +16,8 @@ function getWeather() {
       "direct_normal_irradiance_instant",
     ].join(","),
     timezone: "Europe/Berlin",
-    start_date: now,
-    end_date: now,
+    start_date: d,
+    end_date: d,
   });
 
   return fetch(`${url}?${params.toString()}`)
@@ -27,8 +25,8 @@ function getWeather() {
     .catch(logger.error);
 }
 
-export async function getSunnyRanges() {
-  const rawData = await getWeather();
+export async function getSunnyRanges(date) {
+  const rawData = await getWeather(date);
 
   const sunrise = rawData.daily.sunrise[0];
   const sunset = rawData.daily.sunset[0];
@@ -121,8 +119,7 @@ function mapTimes(times, fields) {
 
 function daytimeFilterGenerator(sunrise, sunset, getter = (date) => date) {
   return function daytimeFilter(date) {
-    // inclusive before and after https://day.js.org/docs/en/plugin/is-between
-    return dayjs(getter(date)).isBetween(sunrise, sunset, "hour", "[]");
+    return isDaytime(sunrise, sunset, getter(date));
   };
 }
 

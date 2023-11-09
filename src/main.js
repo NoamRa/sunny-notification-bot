@@ -7,7 +7,8 @@ import { message } from "telegraf/filters";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
-import { withinTheHour } from "./time-utils.js";
+import { dateIsValid, tomorrow, withinTheHour } from "./time-utils.js";
+import { lines } from "./utils.js";
 import { explainWeatherRange, getSunnyRanges } from "./weather.js";
 import { withAuth } from "./withAuth.js";
 
@@ -20,16 +21,20 @@ async function main() {
 
   bot.start(function start(ctx) {
     ctx.reply(
-      "Hi, I'm Sunny Notification Bot. 👋🏼\nType /help for list of commands.",
+      lines(
+        "Hi, I'm Sunny Notification Bot. 👋🏼",
+        "Type /help for list of commands.",
+      ),
     );
   });
 
   bot.help(function help(ctx) {
     ctx.reply(
-      [
+      lines(
         "/forecast or /f for today's sunny times 🌤",
         "/subscribe to notifications",
-      ].join("\n"),
+        "Protip: try '/forecast tomorrow' or '/f t",
+      ),
     );
   });
 
@@ -50,14 +55,28 @@ async function main() {
   );
 
   async function forecast(ctx) {
+    const forecastDate = ["tomorrow", "t", "tmw", "tmrw"].some(
+      (s) => s === ctx.payload,
+    )
+      ? tomorrow()
+      : ctx.payload;
+    if (forecastDate && !dateIsValid(forecastDate)) {
+      ctx.reply(
+        `I can't understand which date you want forecast when you say '${forecastDate}'`,
+      );
+      return;
+    }
+
     const sunnyRanges = await getSunnyRanges();
     const message =
       sunnyRanges.length === 0
-        ? "The sun is not expected to make a meaningful appearance today."
-        : [
+        ? `The sun is not expected to make a meaningful appearance ${
+            forecastDate ? `on ${forecastDate}` : "today"
+          }.`
+        : lines(
             "Expect sunny times at:",
             ...sunnyRanges.map(explainWeatherRange),
-          ].join("\n");
+          );
     ctx.reply(message);
   }
   bot.command("f", withAuth(forecast));
@@ -73,10 +92,10 @@ async function main() {
       const message =
         sunnyRanges.length === 0
           ? "the sun is not expected to make a meaningful appearance today."
-          : [
+          : lines(
               "expect sunny times at:",
               ...sunnyRanges.map(explainWeatherRange),
-            ].join("\n");
+            );
       const users = await usersDao.getUsers();
       users.forEach((user) => {
         bot.telegram.sendMessage(user.id, `Good morning, ${message}`);

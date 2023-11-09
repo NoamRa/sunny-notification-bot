@@ -32,13 +32,30 @@ export const logger = winston.createLogger({
 process.on(
   "unhandledRejection",
   function handleUnhandledRejection(reason, promise) {
-    logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+    logger.error(
+      `Unhandled Rejection at: ${serialize(promise)}, reason: ${serialize(
+        reason,
+      )}`,
+    );
   },
 );
 
 process.on("uncaughtException", function handleUncaughtException(error) {
-  logger.error("There was an uncaught exception: ", error);
+  logger.error(`There was an uncaught exception: ${serialize(error)}`);
   logger.on("finish", () => {
     process.exit(1);
   });
 });
+
+export function serialize(something) {
+  if (something instanceof Date) {
+    return something.toISOString();
+  } else if (something instanceof Error) {
+    return something.toString();
+  } else if (typeof something === "function") {
+    return something.toString();
+  } else if (something instanceof Promise) {
+    return "Can't serialize a promise";
+  }
+  return JSON.stringify(something);
+}
