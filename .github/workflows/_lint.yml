@@ -6,4 +6,8 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
+      - name: Get Cached Checkout
+        uses: actions/download-artifact@v3
+        with:
+          name: my-checkout-${{ github.run_id }}
       - run: npm run lint
