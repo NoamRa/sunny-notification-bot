@@ -1,16 +1,18 @@
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween.js";
 
+import { isBetweenNumbers } from "./utils.js";
+
 dayjs.extend(isBetween);
 
 const dateFormat = "YYYY-MM-DD";
 const timeFormat = "HH:mm";
 
-export function getDate(datetime) {
+export function formatDate(datetime) {
   return dayjs(datetime).format(dateFormat);
 }
 
-export function getTime(datetime) {
+export function formatTime(datetime) {
   return dayjs(datetime).format(timeFormat);
 }
 
@@ -27,6 +29,12 @@ export function dateIsValid(date) {
   return dayjs(date).isValid();
 }
 
-export function tomorrow() {
-  return getDate(dayjs().add(1, "day"));
+export function isSameHour(time, compared) {
+  return dayjs(time).startOf("hour").isSame(compared);
+}
+
+export function resolveDate(value) {
+  return isBetweenNumbers(-1, 3, Number(value))
+    ? formatDate(dayjs().add(value, "day"))
+    : "";
 }

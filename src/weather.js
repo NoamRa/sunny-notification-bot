@@ -1,11 +1,9 @@
-import dayjs from "dayjs";
-
 import { logger } from "./logger.js";
-import { getDate, getTime, isDaytime } from "./time-utils.js";
+import { formatDate, formatTime, isDaytime, isSameHour } from "./time-utils.js";
 
 function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
-  const d = getDate(date);
+  const d = formatDate(date);
   const params = new URLSearchParams({
     latitude: 52.5167,
     longitude: 13.2833,
@@ -50,9 +48,9 @@ export async function getSunnyRanges(date) {
 
   const weatherData = minutely15Data
     .map((minutelyItem) => {
-      const hourlyItem = hourlyData.find(({ time }) =>
-        dayjs(minutelyItem.time).startOf("hour").isSame(time),
-      );
+      const hourlyItem = hourlyData.find(({ time }) => {
+        return isSameHour(minutelyItem.time, time);
+      });
       if (!hourlyItem) {
         // shouldn't happen
         logger.error(
@@ -70,8 +68,8 @@ export async function getSunnyRanges(date) {
       const score = scoreWeather(item);
       return {
         datetime: time,
-        date: getDate(time),
-        time: getTime(time), // overriding the original time field. That's why it was cloned to datetime
+        date: formatDate(time),
+        time: formatTime(time), // overriding the original time field. That's why it was cloned to datetime
         ...item,
         weatherDescription: WEATHER_CODE[item.weatherCode],
         score,

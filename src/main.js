@@ -7,7 +7,7 @@ import { message } from "telegraf/filters";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
-import { dateIsValid, tomorrow, withinTheHour } from "./time-utils.js";
+import { dateIsValid, resolveDate, withinTheHour } from "./time-utils.js";
 import { lines } from "./utils.js";
 import { explainWeatherRange, getSunnyRanges } from "./weather.js";
 import { withAuth } from "./withAuth.js";
@@ -29,11 +29,12 @@ async function main() {
   });
 
   bot.help(function help(ctx) {
+    // if (ctx.payload === '/forecast' || ctx.payload === '/f') {} // TODO improve /help
+    // if (ctx.payload === '/subscribe' || ctx.payload === '/f') {} // TODO improve /help
     ctx.reply(
       lines(
         "/forecast or /f for today's sunny times 🌤",
         "/subscribe to notifications",
-        "Protip: try '/forecast tomorrow' or '/f t",
       ),
     );
   });
@@ -55,14 +56,13 @@ async function main() {
   );
 
   async function forecast(ctx) {
-    const forecastDate = ["tomorrow", "t", "tmw", "tmrw"].some(
-      (s) => s === ctx.payload,
-    )
-      ? tomorrow()
-      : ctx.payload;
-    if (forecastDate && !dateIsValid(forecastDate)) {
+    const forecastDate = resolveDate(ctx.payload ?? 0);
+    if (!dateIsValid(forecastDate)) {
       ctx.reply(
-        `I can't understand which date you want forecast when you say '${forecastDate}'`,
+        lines(
+          `I can't understand which date you want forecast when you say '${ctx.payload}'.`,
+          "Acceptable values are numbers for desired date between yesterday (-1) to 3 days from now",
+        ),
       );
       return;
     }
@@ -78,12 +78,12 @@ async function main() {
             ...sunnyRanges.map(explainWeatherRange),
           );
     ctx.reply(message);
+    return;
   }
   bot.command("f", withAuth(forecast));
   bot.command("forecast", withAuth(forecast));
 
-  // #region cron
-
+  // #region cron schedule
   // morning schedule
   cron.schedule(
     "0 8 * * *",
@@ -130,7 +130,6 @@ async function main() {
       timezone: "Europe/Berlin",
     },
   );
-
   // #endregion
 
   // bot.command("me", (ctx) =>
