@@ -7,7 +7,7 @@ import { message } from "telegraf/filters";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
-import { dateIsValid, resolveDate, withinTheHour } from "./time-utils.js";
+import { dateIsValid, resolveDate, withinTheHour } from "./timeUtils.js";
 import { lines } from "./utils.js";
 import { explainWeatherRange, getSunnyRanges } from "./weather.js";
 import { withAuth } from "./withAuth.js";
