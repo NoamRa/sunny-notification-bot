@@ -1,5 +1,10 @@
 import { logger } from "./logger.js";
-import { formatDate, formatTime, isDaytime, isSameHour } from "./timeUtils.js";
+import {
+  formatDate,
+  formatTime,
+  isDaytime,
+  isSameHour,
+} from "./timeUtils/index.js";
 
 function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
