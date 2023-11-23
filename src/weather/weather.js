@@ -7,7 +7,7 @@ import {
 } from "../timeUtils/index.js";
 import { clamp, normalizer } from "../utils/index.js";
 
-function getWeather(date) {
+export function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
   const d = formatDate(date);
   const params = new URLSearchParams({
@@ -29,9 +29,7 @@ function getWeather(date) {
     .catch(logger.error);
 }
 
-export async function getSunnyRanges(date) {
-  const rawData = await getWeather(date);
-
+export function getSunnyRanges(rawData) {
   const sunrise = rawData.daily.sunrise[0];
   const sunset = rawData.daily.sunset[0];
 
