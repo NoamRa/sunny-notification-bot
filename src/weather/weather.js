@@ -1,10 +1,11 @@
-import { logger } from "./logger.js";
+import { logger } from "../logger.js";
 import {
   formatDate,
   formatTime,
   isDaytime,
   isSameHour,
-} from "./timeUtils/index.js";
+} from "../timeUtils/index.js";
+import { clamp, normalizer } from "../utils/index.js";
 
 function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
@@ -123,16 +124,6 @@ function mapTimes(times, fields) {
 function daytimeFilterGenerator(sunrise, sunset, getter = (date) => date) {
   return function daytimeFilter(date) {
     return isDaytime(sunrise, sunset, getter(date));
-  };
-}
-
-function clamp(value, min = 0, max = 1) {
-  return Math.max(min, Math.min(value, max));
-}
-
-function normalizer(min, max) {
-  return function normalize(value) {
-    return (value - min) / (max - min);
   };
 }
 

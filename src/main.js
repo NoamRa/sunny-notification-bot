@@ -9,7 +9,7 @@ import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
 import { dateIsValid, resolveDate, withinTheHour } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
-import { explainWeatherRange, getSunnyRanges } from "./weather.js";
+import { explainWeatherRange, getSunnyRanges } from "./weather/index.js";
 import { withAuth } from "./withAuth.js";
 
 logger.info("Starting Sunny notification bot");
