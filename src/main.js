@@ -9,7 +9,11 @@ import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
 import { dateIsValid, resolveDate, withinTheHour } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
-import { explainWeatherRange, getSunnyRanges } from "./weather.js";
+import {
+  explainWeatherRange,
+  getSunnyRanges,
+  getWeather,
+} from "./weather/index.js";
 import { withAuth } from "./withAuth.js";
 
 logger.info("Starting Sunny notification bot");
@@ -67,7 +71,7 @@ async function main() {
       return;
     }
 
-    const sunnyRanges = await getSunnyRanges();
+    const sunnyRanges = await getWeather(forecastDate).then(getSunnyRanges);
     const message =
       sunnyRanges.length === 0
         ? `The sun is not expected to make a meaningful appearance ${
@@ -88,7 +92,7 @@ async function main() {
   cron.schedule(
     "0 8 * * *",
     async function morningSchedule() {
-      const sunnyRanges = await getSunnyRanges();
+      const sunnyRanges = await getWeather().then(getSunnyRanges);
       const message =
         sunnyRanges.length === 0
           ? "the sun is not expected to make a meaningful appearance today."
@@ -110,7 +114,7 @@ async function main() {
   cron.schedule(
     "55 7-16 * * *",
     async function hourlySchedule() {
-      const sunnyRanges = await getSunnyRanges();
+      const sunnyRanges = await getWeather().then(getSunnyRanges);
       const nextSunnyRange = sunnyRanges.find((range) => {
         return withinTheHour(range.start.datetime);
       });

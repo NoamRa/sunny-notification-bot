@@ -1,12 +1,13 @@
-import { logger } from "./logger.js";
+import { logger } from "../logger.js";
 import {
   formatDate,
   formatTime,
   isDaytime,
   isSameHour,
-} from "./timeUtils/index.js";
+} from "../timeUtils/index.js";
+import { clamp, normalizer } from "../utils/index.js";
 
-function getWeather(date) {
+export function getWeather(date) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
   const d = formatDate(date);
   const params = new URLSearchParams({
@@ -28,9 +29,7 @@ function getWeather(date) {
     .catch(logger.error);
 }
 
-export async function getSunnyRanges(date) {
-  const rawData = await getWeather(date);
-
+export function getSunnyRanges(rawData) {
   const sunrise = rawData.daily.sunrise[0];
   const sunset = rawData.daily.sunset[0];
 
@@ -88,7 +87,7 @@ export async function getSunnyRanges(date) {
   return sunnyRanges;
 }
 
-function scoreWeather({ directRadiation, directNormalIrradiance }) {
+export function scoreWeather({ directRadiation, directNormalIrradiance }) {
   // directRadiation - Direct solar radiation on the horizontal plane
   // directNormalIrradiance - Direct solar radiation on the normal plane (perpendicular to the sun)
   // Direct normal irradiance values will be greater than direct ration, especially in the winter when the sun is low
@@ -123,16 +122,6 @@ function mapTimes(times, fields) {
 function daytimeFilterGenerator(sunrise, sunset, getter = (date) => date) {
   return function daytimeFilter(date) {
     return isDaytime(sunrise, sunset, getter(date));
-  };
-}
-
-function clamp(value, min = 0, max = 1) {
-  return Math.max(min, Math.min(value, max));
-}
-
-function normalizer(min, max) {
-  return function normalize(value) {
-    return (value - min) / (max - min);
   };
 }
 

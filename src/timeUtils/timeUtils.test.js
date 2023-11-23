@@ -20,7 +20,7 @@ describe("Test time utils", () => {
     [2023, false],
     ["20-02-02", false],
     ["20-02-2202", false],
-  ])("Check date '%s's validity", (date, expected) => {
+  ])("%#) Check date '%s's validity", (date, expected) => {
     expect(dateIsValid(date)).toBe(expected);
   });
 
@@ -34,7 +34,7 @@ describe("Test time utils", () => {
     ["2023-11-15T07:00:00", "2023-11-15T17:50:15", false],
     ["2023-11-15T13:00:00", "2023-11-15T17:50:15", false],
     ["2023-11-15T00:00:00", "2023-11-15T17:50:15", false],
-  ])("Check '%s' is same hour as '%s'", (a, b, expected) => {
+  ])("%#) Check '%s' is same hour as '%s'", (a, b, expected) => {
     expect(isSameHour(a, b)).toBe(expected);
   });
 });
