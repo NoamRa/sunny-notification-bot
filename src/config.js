@@ -1,6 +1,9 @@
 import * as dotenv from "dotenv";
 
-export const BOT_TOKEN = dotenv.config().parsed.BOT_TOKEN.trim();
+export const BOT_TOKEN = dotenv.config().parsed.BOT_TOKEN?.trim();
+if (typeof BOT_TOKEN !== "string" || BOT_TOKEN === "") {
+  throw new Error("Missing or invalid BOT_TOKEN in .env file");
+}
 
 export const ALLOWED = dotenv
   .config()

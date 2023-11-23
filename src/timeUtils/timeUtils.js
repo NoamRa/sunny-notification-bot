@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import isBetween from "dayjs/plugin/isBetween.js";
 
-import { isBetweenNumbers } from "./utils.js";
+import { isBetweenNumbers } from "../utils/index.js";
 
+dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
 
 const dateFormat = "YYYY-MM-DD";
@@ -26,11 +28,11 @@ export function isDaytime(sunrise, sunset, datetime) {
 }
 
 export function dateIsValid(date) {
-  return dayjs(date).isValid();
+  return dayjs(date, dateFormat, true).isValid();
 }
 
-export function isSameHour(time, compared) {
-  return dayjs(time).startOf("hour").isSame(compared);
+export function isSameHour(datetime, comparedDatetime) {
+  return dayjs(datetime).hour() === dayjs(comparedDatetime).hour();
 }
 
 export function resolveDate(value) {

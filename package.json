@@ -9,7 +9,7 @@
     "lint": "eslint src",
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=128 node ./src/main.js",
     "start:unattended": "git pull origin main && npm ci && npm start",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -31,6 +31,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",
     "nodemon": "2.0.20",
-    "prettier": "3.0.3"
+    "prettier": "3.0.3",
+    "vitest": "0.34.6"
   }
 }
