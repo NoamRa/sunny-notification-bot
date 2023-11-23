@@ -87,7 +87,7 @@ export function getSunnyRanges(rawData) {
   return sunnyRanges;
 }
 
-function scoreWeather({ directRadiation, directNormalIrradiance }) {
+export function scoreWeather({ directRadiation, directNormalIrradiance }) {
   // directRadiation - Direct solar radiation on the horizontal plane
   // directNormalIrradiance - Direct solar radiation on the normal plane (perpendicular to the sun)
   // Direct normal irradiance values will be greater than direct ration, especially in the winter when the sun is low
