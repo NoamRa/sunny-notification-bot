@@ -177,12 +177,9 @@ describe("Test weather", () => {
           ],
         },
       ],
-    ])(
-      "%#) should calculate sunny ranges for $date",
-      ({ date, data, expected }) => {
-        expect(getSunnyRanges(data)).toStrictEqual(expected);
-        1;
-      },
-    );
+    ])("%#) should calculate sunny ranges for $date", ({ data, expected }) => {
+      expect(getSunnyRanges(data)).toStrictEqual(expected);
+      1;
+    });
   });
 });
