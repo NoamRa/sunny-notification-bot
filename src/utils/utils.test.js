@@ -54,6 +54,8 @@ describe("Test utils", () => {
       [{ min: 0, max: 10, value: 10, expected: 1 }], // Boundary value (max)
       [{ min: 0, max: 10, value: -5, expected: -0.5 }], // Value below range
       [{ min: 0, max: 10, value: 15, expected: 1.5 }], // Value above range
+      [{ min: 5, max: 10, value: 15, expected: 2 }], // Value above range
+      [{ min: 5, max: 10, value: 9, expected: 0.8 }], // Value above range
       [{ min: 10, max: 0, value: 5, expected: NaN }], // Invalid range
       [{ min: "a", max: 10, value: 5, expected: NaN }], // Non-numeric min
       [{ min: 0, max: "b", value: 5, expected: NaN }], // Non-numeric max

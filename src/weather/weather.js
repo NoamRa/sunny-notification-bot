@@ -69,7 +69,7 @@ export function getSunnyRanges(rawData) {
       };
     })
     .map(({ time, ...item }) => {
-      const score = scoreWeather(item);
+      const score = sunPercent(item);
       return {
         datetime: time,
         date: formatDate(time),
@@ -87,14 +87,17 @@ export function getSunnyRanges(rawData) {
   return sunnyRanges;
 }
 
-export function scoreWeather({ directRadiation, directNormalIrradiance }) {
-  // directRadiation - Direct solar radiation on the horizontal plane
-  // directNormalIrradiance - Direct solar radiation on the normal plane (perpendicular to the sun)
-  // Direct normal irradiance values will be greater than direct ration, especially in the winter when the sun is low
-
-  const normalizedDNI = normalizer(50, 200)(directRadiation);
-  const normalizedDIN = normalizer(100, 350)(directNormalIrradiance);
-
+/**
+ * Given parameters, calculates percent of sunny-ness
+ * @param {Object} parameters - Named parameters object.
+ * @param {number} parameters.directRadiation - Direct solar radiation on the horizontal plane
+ * @param {number} parameters.directNormalIrradiance - Direct solar radiation on the normal plane (perpendicular to the sun)
+ * Direct normal irradiance values will be greater than direct ration, especially in the winter when the sun is low
+ * @returns {number} score in range 0-100
+ */
+function sunPercent({ directRadiation, directNormalIrradiance }) {
+  const normalizedDNI = normalizer(25, 150)(directRadiation);
+  const normalizedDIN = normalizer(50, 400)(directNormalIrradiance);
   return clamp(normalizedDNI * normalizedDIN);
 }
 
