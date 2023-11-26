@@ -7,7 +7,12 @@ import { message } from "telegraf/filters";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
-import { dateIsValid, resolveDate, withinTheHour } from "./timeUtils/index.js";
+import {
+  dateIsValid,
+  formatTime,
+  resolveDate,
+  withinTheHour,
+} from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
 import {
   explainWeatherRange,
@@ -92,6 +97,7 @@ async function main() {
   cron.schedule(
     "0 8 * * *",
     async function morningSchedule() {
+      logger.info("Running morningSchedule");
       const sunnyRanges = await getWeather().then(getSunnyRanges);
       const message =
         sunnyRanges.length === 0
@@ -114,6 +120,7 @@ async function main() {
   cron.schedule(
     "55 7-16 * * *",
     async function hourlySchedule() {
+      logger.info(`Running hourlySchedule ${formatTime()}`);
       const sunnyRanges = await getWeather().then(getSunnyRanges);
       const nextSunnyRange = sunnyRanges.find((range) => {
         return withinTheHour(range.start.datetime);
