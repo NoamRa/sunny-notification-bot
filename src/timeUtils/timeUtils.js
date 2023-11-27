@@ -36,7 +36,7 @@ export function isSameHour(datetime, comparedDatetime) {
 }
 
 export function resolveDate(value) {
-  return isBetweenNumbers(-1, 3, Number(value))
-    ? formatDate(dayjs().add(value, "day"))
+  return isBetweenNumbers(-1, Number(value), 3)
+    ? formatDate(dayjs().add(Number(value), "day"))
     : "";
 }
