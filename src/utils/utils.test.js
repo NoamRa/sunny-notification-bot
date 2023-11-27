@@ -11,17 +11,26 @@ describe("Test utils", () => {
 
   describe("Test isBetweenNumbers", () => {
     test.each([
-      [1, 0, 2, true],
-      [2, 0, 1, false],
-      [0, 1, 2, false],
-      [-2, -3, -1, true],
-      [-1, -1, -1, true],
-      [-1, -2, -2, false],
-      [0, 0, 0, true],
-      [2, 2, 2, true],
-    ])("%#) Check %s is between %s and %s", (num, start, end, expected) => {
-      expect(isBetweenNumbers(start, end, num)).toBe(expected);
-    });
+      [{ min: 0, num: 1, max: 2, expected: true }],
+      [{ min: 2, num: 1, max: 0, expected: false }],
+      [{ min: 0, num: 2, max: 1, expected: false }],
+      [{ min: -3, num: -2, max: -1, expected: true }],
+      [{ min: -1, num: -1, max: -1, expected: true }],
+      [{ min: -1, num: -2, max: -2, expected: false }],
+      [{ min: 0, num: 0, max: 0, expected: true }],
+      [{ min: 2, num: 2, max: 2, expected: true }],
+      [{ min: 2, num: 2, max: 2, expected: true }],
+      [{ min: 2, num: 2, max: "2", expected: false }],
+      [{ min: 2, num: "2", max: 2, expected: false }],
+      [{ min: "2", num: 2, max: 2, expected: false }],
+      [{ min: 1, num: null, max: 3, expected: false }],
+      [{ min: 1, num: NaN, max: 3, expected: false }],
+    ])(
+      "%#) Check $num is between $min and $max is $expected",
+      ({ num, min, max, expected }) => {
+        expect(isBetweenNumbers(min, num, max)).toBe(expected);
+      },
+    );
   });
 
   describe("Test clamp", () => {
