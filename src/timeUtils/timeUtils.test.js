@@ -1,12 +1,11 @@
-import { describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
   dateIsValid,
   // formatDate,
   // formatTime,
   // isDaytime,
   isSameHour,
-  // resolveDate,
-  // withinTheHour,
+  resolveDate,
 } from "./timeUtils";
 
 describe("Test time utils", () => {
@@ -36,5 +35,94 @@ describe("Test time utils", () => {
     ["2023-11-15T00:00:00", "2023-11-15T17:50:15", false],
   ])("%#) Check '%s' is same hour as '%s'", (a, b, expected) => {
     expect(isSameHour(a, b)).toBe(expected);
+  });
+
+  describe("Test resolveDate", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test.each([
+      [
+        {
+          date: "2023-04-05",
+          value: "2",
+          expected: "2023-04-07",
+        },
+      ],
+      [
+        {
+          date: "1900-01-01",
+          value: "-1",
+          expected: "1899-12-31",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: "1",
+          expected: "2023-04-06",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: "",
+          expected: "2023-04-05",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: 0,
+          expected: "2023-04-05",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: 10,
+          expected: "",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: 3,
+          expected: "2023-04-08",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: NaN,
+          expected: "",
+        },
+      ],
+      [
+        {
+          date: "2023-04-09",
+          value: null, // edge case because Number(null) is 0
+          expected: "2023-04-09",
+        },
+      ],
+      [
+        {
+          date: "2023-04-05",
+          value: undefined,
+          expected: "",
+        },
+      ],
+    ])(
+      "%#) Check when adding $value to $date, resolveDate returns $expected",
+      ({ date, value, expected }) => {
+        vi.setSystemTime(new Date(date));
+        expect(resolveDate(value)).toBe(expected);
+      },
+    );
   });
 });
