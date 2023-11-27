@@ -2,8 +2,12 @@ export function lines(...lines) {
   return lines.join("\n");
 }
 
-export function isBetweenNumbers(start, end, num) {
-  return start <= num && num <= end;
+export function isBetweenNumbers(min, num, max) {
+  if (
+    ![min, max, num].every((n) => typeof n === "number" && Number.isFinite(n))
+  )
+    return false;
+  return min <= num && num <= max;
 }
 
 export function clamp(value, min = 0, max = 1) {
