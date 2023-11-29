@@ -6,6 +6,7 @@ import {
   sunny_morning_2023_11_13,
   sunny_morning_2023_11_22,
   very_sunny_day_2023_11_26,
+  sunny_afternoon_2023_11_28,
 } from "./openMeteo.mocks.js";
 
 describe("Test weather", () => {
@@ -172,6 +173,41 @@ describe("Test weather", () => {
                 time: "10:00",
                 weatherCode: 1,
                 weatherDescription: "Mainly Sunny",
+              },
+            },
+          ],
+        },
+      ],
+      [
+        {
+          date: sunny_afternoon_2023_11_28.daily.time[0],
+          data: sunny_afternoon_2023_11_28,
+          expected: [
+            {
+              end: {
+                cloudCover: 93,
+                date: "2023-11-28",
+                datetime: "2023-11-28T13:30",
+                directNormalIrradiance: 425.5,
+                directRadiation: 98,
+                isSunny: true,
+                score: 0.6265485714285715,
+                time: "13:30",
+                weatherCode: 3,
+                weatherDescription: "Cloudy",
+              },
+              length: 2,
+              start: {
+                cloudCover: 93,
+                date: "2023-11-28",
+                datetime: "2023-11-28T13:15",
+                directNormalIrradiance: 435.8,
+                directRadiation: 106.4,
+                isSunny: true,
+                score: 0.7178084571428571,
+                time: "13:15",
+                weatherCode: 3,
+                weatherDescription: "Cloudy",
               },
             },
           ],
