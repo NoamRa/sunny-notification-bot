@@ -19,7 +19,10 @@ export function formatTime(datetime) {
 }
 
 export function withinTheHour(datetime) {
-  return dayjs().add(1, "hour").endOf("hour").diff(datetime, "hour");
+  const now = dayjs();
+  const endOfNextHour = now.add(1, "hour").endOf("hour");
+  // exclusive before, inclusive after https://day.js.org/docs/en/plugin/is-between
+  return dayjs(datetime).isBetween(now, endOfNextHour, "hour", "(]");
 }
 
 export function isDaytime(sunrise, sunset, datetime) {

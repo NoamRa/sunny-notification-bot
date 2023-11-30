@@ -1,26 +1,34 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
   dateIsValid,
-  // formatDate,
-  // formatTime,
-  // isDaytime,
   isSameHour,
   resolveDate,
+  withinTheHour,
 } from "./timeUtils";
 
 describe("Test time utils", () => {
-  test.each([
-    ["2020-02-02", true],
-    ["4567-12-23", true],
-    ["abc", false],
-    ["05:01", false],
-    ["83-01", false],
-    [3, false],
-    [2023, false],
-    ["20-02-02", false],
-    ["20-02-2202", false],
-  ])("%#) Check date '%s's validity", (date, expected) => {
-    expect(dateIsValid(date)).toBe(expected);
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  describe("Test dateIsValid", () => {
+    test.each([
+      ["2020-02-02", true],
+      ["4567-12-23", true],
+      ["abc", false],
+      ["05:01", false],
+      ["83-01", false],
+      [3, false],
+      [2023, false],
+      ["20-02-02", false],
+      ["20-02-2202", false],
+    ])("%#) Check date '%s's validity", (date, expected) => {
+      expect(dateIsValid(date)).toBe(expected);
+    });
   });
 
   test.each([
@@ -38,14 +46,6 @@ describe("Test time utils", () => {
   });
 
   describe("Test resolveDate", () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
     test.each([
       [
         {
@@ -122,6 +122,65 @@ describe("Test time utils", () => {
       ({ date, value, expected }) => {
         vi.setSystemTime(new Date(date));
         expect(resolveDate(value)).toBe(expected);
+      },
+    );
+  });
+
+  describe("Test withinTheHour", () => {
+    test.each([
+      [
+        {
+          // expected use case
+          mockNowTime: "2023-04-05T09:55:00Z",
+          datetime: "2023-04-05T10:00:00Z",
+          expected: true,
+        },
+      ],
+      [
+        {
+          // good for the end of the hour
+          mockNowTime: "2023-04-05T09:55:00Z",
+          datetime: "2023-04-05T10:56:00Z",
+          expected: true,
+        },
+      ],
+      [
+        {
+          // but not good after the next hour ended
+          mockNowTime: "2023-04-05T09:55:00Z",
+          datetime: "2023-04-05T11:00:00Z",
+          expected: false,
+        },
+      ],
+      [
+        {
+          // only look forward 1
+          mockNowTime: "2023-04-05T08:15:00Z",
+          datetime: "2023-04-05T08:10:00Z",
+          expected: false,
+        },
+      ],
+      [
+        {
+          // only look forward 2
+          mockNowTime: "2023-04-05T10:00:00Z",
+          datetime: "2023-04-05T09:00:00Z",
+          expected: false,
+        },
+      ],
+      [
+        {
+          // only look forward 3
+          mockNowTime: "2023-04-05T11:55:00Z",
+          datetime: "2023-04-05T11:30:00Z",
+          expected: false,
+        },
+      ],
+    ])(
+      "%#) Check $datetime is within the hour from $mockNowTime, $expected",
+      ({ mockNowTime, datetime, expected }) => {
+        vi.setSystemTime(new Date(mockNowTime));
+        expect(withinTheHour(datetime)).toBe(expected);
       },
     );
   });
