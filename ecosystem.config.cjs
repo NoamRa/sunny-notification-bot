@@ -7,6 +7,7 @@ module.exports = {
     {
       name: "sunny-notification-bot",
       script: "npm run start:unattended",
+      cron_restart: "0 3 * * *", // restart bot every day at 3AM
     },
   ],
 };
