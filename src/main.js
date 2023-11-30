@@ -4,21 +4,16 @@ import process from "node:process";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
+import { formatTime } from "./timeUtils/index.js";
+import {
+  forecastMessage,
+  hourlyScheduleMessage,
+  morningScheduleMessage,
+} from "./botActions/index.js";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
 import { logger } from "./logger.js";
-import {
-  dateIsValid,
-  formatTime,
-  resolveDate,
-  withinTheHour,
-} from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
-import {
-  explainWeatherRange,
-  getSunnyRanges,
-  getWeather,
-} from "./weather/index.js";
 import { withAuth } from "./withAuth.js";
 
 logger.info("Starting Sunny notification bot");
@@ -65,51 +60,27 @@ async function main() {
   );
 
   async function forecast(ctx) {
-    const forecastDate = resolveDate(ctx.payload ?? 0);
-    if (!dateIsValid(forecastDate)) {
-      ctx.reply(
-        lines(
-          `I can't understand which date you want forecast when you say '${ctx.payload}'.`,
-          "Acceptable values are numbers for desired date between yesterday (-1) to 3 days from now",
-        ),
-      );
-      return;
-    }
-
-    const sunnyRanges = await getWeather(forecastDate).then(getSunnyRanges);
-    const message =
-      sunnyRanges.length === 0
-        ? `The sun is not expected to make a meaningful appearance ${
-            forecastDate ? `on ${forecastDate}` : "today"
-          }.`
-        : lines(
-            "Expect sunny times at:",
-            ...sunnyRanges.map(explainWeatherRange),
-          );
-    ctx.reply(message);
-    return;
+    logger.info(`Running forecast with payload '${ctx.payload}'`);
+    ctx.reply(await forecastMessage(ctx.payload));
   }
   bot.command("f", withAuth(forecast));
   bot.command("forecast", withAuth(forecast));
 
   // #region cron schedule
+  async function sendMessageToUsers(message) {
+    const users = await usersDao.getUsers();
+    for (const user of users) {
+      await bot.telegram.sendMessage(user.id, message);
+    }
+    return;
+  }
+
   // morning schedule
   cron.schedule(
     "0 8 * * *",
-    async function morningSchedule() {
+    function morningSchedule() {
       logger.info("Running morningSchedule");
-      const sunnyRanges = await getWeather().then(getSunnyRanges);
-      const message =
-        sunnyRanges.length === 0
-          ? "the sun is not expected to make a meaningful appearance today."
-          : lines(
-              "expect sunny times at:",
-              ...sunnyRanges.map(explainWeatherRange),
-            );
-      const users = await usersDao.getUsers();
-      users.forEach((user) => {
-        bot.telegram.sendMessage(user.id, `Good morning, ${message}`);
-      });
+      morningScheduleMessage.then(sendMessageToUsers);
     },
     {
       timezone: "Europe/Berlin",
@@ -119,23 +90,9 @@ async function main() {
   // check sunshine for next hour 5 minutes before the hour
   cron.schedule(
     "55 7-16 * * *",
-    async function hourlySchedule() {
+    function hourlySchedule() {
       logger.info(`Running hourlySchedule ${formatTime()}`);
-      const sunnyRanges = await getWeather().then(getSunnyRanges);
-      const nextSunnyRange = sunnyRanges.find((range) => {
-        return withinTheHour(range.start.datetime);
-      });
-      if (nextSunnyRange) {
-        const users = await users.getUsers();
-        users.forEach((user) => {
-          bot.telegram.sendMessage(
-            user.id,
-            `Expecting sunshine within the hour: ${explainWeatherRange(
-              nextSunnyRange,
-            )}`,
-          );
-        });
-      }
+      hourlyScheduleMessage.then(sendMessageToUsers);
     },
     {
       timezone: "Europe/Berlin",
