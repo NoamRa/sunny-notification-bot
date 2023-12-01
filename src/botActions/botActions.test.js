@@ -34,7 +34,17 @@ describe("Test bot actions (integration tests)", () => {
         {
           date: day_without_sun_2023_11_25.daily.time[0],
           mockData: day_without_sun_2023_11_25,
-          expected: "The sun is not expected to make a meaningful appearance",
+          expected:
+            "The sun is not expected to make a meaningful appearance today.",
+        },
+      ],
+      [
+        {
+          date: "2023-11-29",
+          mockData: day_without_sun_2023_11_25,
+          payload: 1,
+          expected:
+            "The sun is not expected to make a meaningful appearance on 2023-11-30.",
         },
       ],
       [
@@ -42,9 +52,10 @@ describe("Test bot actions (integration tests)", () => {
           date: sunny_morning_2023_11_13.daily.time[0],
           mockData: sunny_morning_2023_11_13,
           expected: lines(
-            "Expect sunny times at:",
+            "2023-11-13 - Expect sunny times at:",
             "10:15 -> 11:00 (Cloudy)",
             "12:00 -> 12:15 (Cloudy)",
+            "13:15 -> 13:45 (Cloudy)",
           ),
         },
       ],
@@ -52,7 +63,10 @@ describe("Test bot actions (integration tests)", () => {
         {
           date: sunny_morning_2023_11_22.daily.time[0],
           mockData: sunny_morning_2023_11_22,
-          expected: lines("Expect sunny times at:", "09:45 -> 12:45 (Sunny)"),
+          expected: lines(
+            "2023-11-22 - Expect sunny times at:",
+            "09:45 -> 12:45 (Sunny)",
+          ),
         },
       ],
       [
@@ -60,7 +74,7 @@ describe("Test bot actions (integration tests)", () => {
           date: very_sunny_day_2023_11_26.daily.time[0],
           mockData: very_sunny_day_2023_11_26,
           expected: lines(
-            "Expect sunny times at:",
+            "2023-11-26 - Expect sunny times at:",
             "10:00 -> 13:45 (Mainly Sunny)",
           ),
         },
@@ -69,13 +83,20 @@ describe("Test bot actions (integration tests)", () => {
         {
           date: sunny_afternoon_2023_11_28.daily.time[0],
           mockData: sunny_afternoon_2023_11_28,
-          expected: lines("Expect sunny times at:", "13:15 -> 13:30 (Cloudy)"),
+          expected: lines(
+            "2023-11-28 - Expect sunny times at:",
+            "13:15 -> 13:30 (Cloudy)",
+          ),
         },
       ],
-    ])("%#) forecastMessage for $date", async ({ mockData, expected }) => {
-      vi.spyOn(WeatherModule, "getWeather").mockResolvedValue(mockData);
-      expect(await forecastMessage()).toContain(expected);
-    });
+    ])(
+      "%#) forecastMessage for $date",
+      async ({ date, mockData, payload, expected }) => {
+        vi.setSystemTime(new Date(date));
+        vi.spyOn(WeatherModule, "getWeather").mockResolvedValue(mockData);
+        expect(await forecastMessage(payload)).toEqual(expected);
+      },
+    );
   });
 
   describe("Test hourlyScheduleMessage", () => {

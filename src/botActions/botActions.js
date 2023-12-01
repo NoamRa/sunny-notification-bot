@@ -1,4 +1,9 @@
-import { dateIsValid, resolveDate, withinTheHour } from "../timeUtils/index.js";
+import {
+  dateIsValid,
+  formatDate,
+  resolveDate,
+  withinTheHour,
+} from "../timeUtils/index.js";
 import { lines } from "../utils/index.js";
 import {
   explainWeatherRange,
@@ -16,11 +21,17 @@ export async function forecastMessage(payload) {
   }
 
   const sunnyRanges = await getWeather(forecastDate).then(getSunnyRanges);
-  return sunnyRanges.length === 0
-    ? `The sun is not expected to make a meaningful appearance ${
-        forecastDate ? `on ${forecastDate}` : "today"
-      }.`
-    : lines("Expect sunny times at:", ...sunnyRanges.map(explainWeatherRange));
+  if (sunnyRanges.length >= 1) {
+    const date = sunnyRanges[0].start.date;
+    return lines(
+      `${date} - Expect sunny times at:`,
+      ...sunnyRanges.map(explainWeatherRange),
+    );
+  }
+  const isToday = formatDate() === forecastDate;
+  return `The sun is not expected to make a meaningful appearance ${
+    isToday ? "today" : `on ${forecastDate}`
+  }.`;
 }
 
 export async function hourlyScheduleMessage() {

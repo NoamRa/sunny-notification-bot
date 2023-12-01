@@ -25,6 +25,10 @@ export function getWeather(date) {
   });
 
   return fetch(`${url}?${params.toString()}`)
+    .then((response) => {
+      if (response.ok) return response;
+      throw response;
+    })
     .then((res) => res.json())
     .catch(logger.error);
 }
