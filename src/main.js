@@ -61,7 +61,11 @@ async function main() {
 
   async function forecast(ctx) {
     logger.info(`Running forecast with payload '${ctx.payload}'`);
-    ctx.reply(await forecastMessage(ctx.payload));
+    try {
+      ctx.reply(await forecastMessage(ctx.payload));
+    } catch (err) {
+      logger.error(err);
+    }
   }
   bot.command("f", withAuth(forecast));
   bot.command("forecast", withAuth(forecast));
@@ -80,7 +84,11 @@ async function main() {
     "0 8 * * *",
     function morningSchedule() {
       logger.info("Running morningSchedule");
-      morningScheduleMessage().then(sendMessageToUsers);
+      try {
+        morningScheduleMessage().then(sendMessageToUsers);
+      } catch (err) {
+        logger.error(err);
+      }
     },
     {
       timezone: "Europe/Berlin",
@@ -92,7 +100,11 @@ async function main() {
     "55 7-16 * * *",
     function hourlySchedule() {
       logger.info(`Running hourlySchedule ${formatTime()}`);
-      hourlyScheduleMessage().then(sendMessageToUsers);
+      try {
+        hourlyScheduleMessage().then(sendMessageToUsers);
+      } catch (err) {
+        logger.error(err);
+      }
     },
     {
       timezone: "Europe/Berlin",
