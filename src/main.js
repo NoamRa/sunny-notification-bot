@@ -80,7 +80,7 @@ async function main() {
     "0 8 * * *",
     function morningSchedule() {
       logger.info("Running morningSchedule");
-      morningScheduleMessage.then(sendMessageToUsers);
+      morningScheduleMessage().then(sendMessageToUsers);
     },
     {
       timezone: "Europe/Berlin",
@@ -92,7 +92,7 @@ async function main() {
     "55 7-16 * * *",
     function hourlySchedule() {
       logger.info(`Running hourlySchedule ${formatTime()}`);
-      hourlyScheduleMessage.then(sendMessageToUsers);
+      hourlyScheduleMessage().then(sendMessageToUsers);
     },
     {
       timezone: "Europe/Berlin",
