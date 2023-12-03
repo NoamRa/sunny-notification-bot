@@ -86,11 +86,7 @@ async function main() {
     "0 8 * * *",
     function morningSchedule() {
       logger.info("Running morningSchedule");
-      try {
-        morningScheduleMessage().then(sendMessageToUsers);
-      } catch (err) {
-        logger.error(err);
-      }
+      morningScheduleMessage().then(sendMessageToUsers).catch(logger.error);
     },
     {
       timezone: "Europe/Berlin",
@@ -102,11 +98,7 @@ async function main() {
     "55 7-16 * * *",
     function hourlySchedule() {
       logger.info(`Running hourlySchedule ${formatTime()}`);
-      try {
-        hourlyScheduleMessage().then(sendMessageToUsers);
-      } catch (err) {
-        logger.error(err);
-      }
+      hourlyScheduleMessage().then(sendMessageToUsers).catch(logger.error);
     },
     {
       timezone: "Europe/Berlin",
