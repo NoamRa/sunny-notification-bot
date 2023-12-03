@@ -9,7 +9,7 @@ describe("CI tests", () => {
     let version;
     try {
       version = JSON.parse(
-        execSync("git show main:package.json", { encoding: "utf-8" }),
+        execSync("git show origin/main:package.json", { encoding: "utf-8" }),
       ).version;
     } catch (err) {
       throw err;
