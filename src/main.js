@@ -72,6 +72,8 @@ async function main() {
 
   // #region cron schedule
   async function sendMessageToUsers(message) {
+    if (!message) return;
+
     const users = await usersDao.getUsers();
     for (const user of users) {
       await bot.telegram.sendMessage(user.id, message);
