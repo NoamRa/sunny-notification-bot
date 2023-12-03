@@ -75,6 +75,11 @@ async function main() {
     if (!message) return;
 
     const users = await usersDao.getUsers();
+    if (users.length === 0) {
+      logger.warn(`User list is empty`);
+      return;
+    }
+
     for (const user of users) {
       await bot.telegram.sendMessage(user.id, message);
     }
