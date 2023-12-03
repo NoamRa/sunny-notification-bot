@@ -15,13 +15,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Setup git
-      #   run: |
-      #     # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-      #     git --version
-      #     git config user.name "GitHub Actions Bot"
-      #     git config user.email "<>"
-      #     git status
+      - name: Setup git
+        run: |
+          git --version
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git status
+          git branch --all
 
       - name: Nodejs Setup
         uses: actions/setup-node@v3
