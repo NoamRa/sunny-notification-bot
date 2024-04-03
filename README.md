@@ -65,3 +65,10 @@ npm run dev
   node --inspect=0.0.0.0:9229 --max-old-space-size=abc ./src/main.js
   ```
 - Server should appear as remote target. Click inspect to open Chrome DevTools.
+
+### TODO
+
+[] Retry when `getWeather` fails (communicate failure to user after retries?)
+[] Users
+[] User can choose wether to get morning notification, hourly notifications
+[] USer can set their location
