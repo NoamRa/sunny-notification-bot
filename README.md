@@ -68,7 +68,9 @@ npm run dev
 
 ### TODO
 
-[] Retry when `getWeather` fails (communicate failure to user after retries?)
-[] Users
-[] User can choose wether to get morning notification, hourly notifications
-[] USer can set their location
+- [ ] Retry when `getWeather` fails (communicate failure to user after retries?)
+- [ ] Users
+  - [ ] Users can unsubscribe - completly deleting entry
+  - [ ] User can choose wether to get morning notification: none / only when sunny / every morning
+  - [ ] User can choose wether to get hourly notifications: yes / no
+  - [ ] User can set their location
