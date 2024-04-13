@@ -53,9 +53,9 @@ describe("Test bot actions (integration tests)", () => {
           mockData: sunny_morning_2023_11_13,
           expected: lines(
             "2023-11-13 - Expect sunny times at:",
-            "10:15 -> 11:00 (Cloudy)",
-            "12:00 -> 12:15 (Cloudy)",
-            "13:15 -> 13:45 (Cloudy)",
+            "10:15 -> 11:00",
+            "12:00 -> 12:15",
+            "13:15 -> 13:45",
           ),
         },
       ],
@@ -65,7 +65,7 @@ describe("Test bot actions (integration tests)", () => {
           mockData: sunny_morning_2023_11_22,
           expected: lines(
             "2023-11-22 - Expect sunny times at:",
-            "09:45 -> 12:45 (Sunny)",
+            "09:45 -> 12:45",
           ),
         },
       ],
@@ -75,7 +75,7 @@ describe("Test bot actions (integration tests)", () => {
           mockData: very_sunny_day_2023_11_26,
           expected: lines(
             "2023-11-26 - Expect sunny times at:",
-            "10:00 -> 13:45 (Mainly Sunny)",
+            "10:00 -> 13:45",
           ),
         },
       ],
@@ -85,7 +85,7 @@ describe("Test bot actions (integration tests)", () => {
           mockData: sunny_afternoon_2023_11_28,
           expected: lines(
             "2023-11-28 - Expect sunny times at:",
-            "13:15 -> 13:30 (Cloudy)",
+            "13:15 -> 13:30",
           ),
         },
       ],
@@ -120,8 +120,7 @@ describe("Test bot actions (integration tests)", () => {
         {
           mockNowTime: "2023-11-13T09:55",
           mockData: sunny_morning_2023_11_13,
-          expected:
-            "Expecting sunshine within the hour: 10:15 -> 11:00 (Cloudy)",
+          expected: "Expecting sunshine within the hour: 10:15 -> 11:00",
         },
       ],
       [
@@ -135,16 +134,14 @@ describe("Test bot actions (integration tests)", () => {
         {
           mockNowTime: "2023-11-13T11:55",
           mockData: sunny_morning_2023_11_13,
-          expected:
-            "Expecting sunshine within the hour: 12:00 -> 12:15 (Cloudy)",
+          expected: "Expecting sunshine within the hour: 12:00 -> 12:15",
         },
       ],
       [
         {
           mockNowTime: "2023-11-13T12:55",
           mockData: sunny_morning_2023_11_13,
-          expected:
-            "Expecting sunshine within the hour: 13:15 -> 13:45 (Cloudy)",
+          expected: "Expecting sunshine within the hour: 13:15 -> 13:45",
         },
       ],
       [
@@ -195,8 +192,7 @@ describe("Test bot actions (integration tests)", () => {
         {
           mockNowTime: "2023-11-26T09:55",
           mockData: very_sunny_day_2023_11_26,
-          expected:
-            "Expecting sunshine within the hour: 10:00 -> 13:45 (Mainly Sunny)",
+          expected: "Expecting sunshine within the hour: 10:00 -> 13:45",
         },
       ],
       [
@@ -276,8 +272,8 @@ describe("Test bot actions (integration tests)", () => {
           mockData: sunny_morning_2023_11_13,
           expected: lines(
             "expect sunny times at:",
-            "10:15 -> 11:00 (Cloudy)",
-            "12:00 -> 12:15 (Cloudy)",
+            "10:15 -> 11:00",
+            "12:00 -> 12:15",
           ),
         },
       ],
@@ -285,24 +281,21 @@ describe("Test bot actions (integration tests)", () => {
         {
           date: sunny_morning_2023_11_22.daily.time[0],
           mockData: sunny_morning_2023_11_22,
-          expected: lines("expect sunny times at:", "09:45 -> 12:45 (Sunny)"),
+          expected: lines("expect sunny times at:", "09:45 -> 12:45"),
         },
       ],
       [
         {
           date: very_sunny_day_2023_11_26.daily.time[0],
           mockData: very_sunny_day_2023_11_26,
-          expected: lines(
-            "expect sunny times at:",
-            "10:00 -> 13:45 (Mainly Sunny)",
-          ),
+          expected: lines("expect sunny times at:", "10:00 -> 13:45"),
         },
       ],
       [
         {
           date: sunny_afternoon_2023_11_28.daily.time[0],
           mockData: sunny_afternoon_2023_11_28,
-          expected: lines("expect sunny times at:", "13:15 -> 13:30 (Cloudy)"),
+          expected: lines("expect sunny times at:", "13:15 -> 13:30"),
         },
       ],
     ])(
