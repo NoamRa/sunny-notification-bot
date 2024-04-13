@@ -166,7 +166,7 @@ function sunnyRangeAnalyzer(weatherData) {
 }
 
 export function explainWeatherRange(weatherRange) {
-  return `${weatherRange.start.time} -> ${weatherRange.end.time} (${weatherRange.start.weatherDescription})`;
+  return `${weatherRange.start.time} -> ${weatherRange.end.time}`;
 }
 
 const WEATHER_CODE = {
