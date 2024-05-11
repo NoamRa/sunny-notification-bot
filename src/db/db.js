@@ -48,7 +48,7 @@ export async function DB(dbPath) {
     if (!entryKeyValid(entryKey)) return;
 
     const db = await read();
-    await write({ ...db, [entryKey]: data });
+    return await write({ ...db, [entryKey]: data });
   }
 
   return {

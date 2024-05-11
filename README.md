@@ -1,6 +1,26 @@
 # Sunny Notification Bot
 
-Telegram bot that notifies when it's sunny https://t.me/SunnyNotificationBot
+Telegram bot that notifies when it's sunny - https://t.me/SunnyNotificationBot
+![Sunny notification bot demo](docs/notification_example.png)
+
+This bot is still in alpha, and you must be added to allow list in order to interact with it. Feel free to clone and run locally.
+
+### User manual
+
+As in every bot, start by sending the `/start` command.
+Send command `/subscribe` to subscribe and then send location. The location must be in Germany, doesn't have to be exact, and unfortunately doesn't work from telegram web. Location can be updated at any time.
+The bot sends daily forecast in the morning and update notification if it's sunny every hour.
+
+#### Interactions
+
+| Command             | Description                                                                                                          |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `/start`            | Description                                                                                                          |
+| `/help`             | List of commands                                                                                                     |
+| `/subscribe`        | Subscribe to Sunny notification bot. This saves user preferences such as location                                    |
+| `/forecast` or `/f` | Get today's forecast. Add number (ex .`/f 1`) to see tomorrow's forecast. Applicable numbers are -1 (yesterday) to 3 |
+
+Sending location updates your preference.
 
 ### Run
 
@@ -24,7 +44,7 @@ Fill `.env` file
 cp example.env .env
 ```
 
-and add the bot's token and allowed users
+and add the bot's token from [BotFather](https://t.me/botfather) and allowed users
 
 To develop use
 
@@ -70,7 +90,7 @@ npm run dev
 
 - [ ] Retry when `getWeather` fails (communicate failure to user after retries?)
 - [ ] Users
-  - [ ] Users can unsubscribe - completly deleting entry
+  - [ ] Users can unsubscribe - completely deleting entry
   - [ ] User can choose wether to get morning notification: none / only when sunny / every morning
   - [ ] User can choose wether to get hourly notifications: yes / no
-  - [ ] User can set their location
+  - [x] User can set their location

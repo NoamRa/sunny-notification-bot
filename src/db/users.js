@@ -17,6 +17,11 @@ export async function createUsersDAO(DB) {
     return await DB.readEntry(entryKey);
   }
 
+  async function getUser(id) {
+    const users = await getUsers();
+    return users.find((user) => user.id === id);
+  }
+
   async function createUser(id, username, displayName) {
     const users = await getUsers();
     if (users.find((user) => user.id === id)) {
@@ -28,8 +33,31 @@ export async function createUsersDAO(DB) {
     return newUser;
   }
 
+  async function updateLocation(userId, location) {
+    const users = await getUsers();
+    const userIndex = users.findIndex((user) => user.id === userId);
+    if (userIndex === -1) {
+      logger.error(`updateLocation failed to find user with ID '${userId}'`);
+      return;
+    }
+
+    const currentUser = users[userIndex];
+    const updatedUser = { ...currentUser, location };
+    users[userIndex] = updatedUser;
+
+    const res = await DB.overwriteEntry(entryKey, [...users]);
+    logger.debug(
+      `User updated. Before: ${JSON.stringify(
+        currentUser,
+      )}. After: ${JSON.stringify(updatedUser)}`,
+    );
+    return res;
+  }
+
   return {
+    getUser,
     getUsers,
     createUser,
+    updateLocation,
   };
 }

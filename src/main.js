@@ -4,7 +4,6 @@ import process from "node:process";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
-import { formatTime } from "./timeUtils/index.js";
 import {
   forecastMessage,
   hourlyScheduleMessage,
@@ -12,7 +11,9 @@ import {
 } from "./botActions/index.js";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
+import { isLocationValid, isLocationInGermany } from "./location/index.js";
 import { logger } from "./logger.js";
+import { formatTime } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
 import { withAuth } from "./withAuth.js";
 
@@ -43,6 +44,7 @@ async function main() {
     );
   });
 
+  // #region subscribe and user info
   bot.command(
     "subscribe",
     withAuth(async function subscribe(ctx) {
@@ -52,17 +54,26 @@ async function main() {
         ctx.message.from.first_name,
       );
 
-      const message = user
-        ? `Success! ${user.displayName} (${user.id}) has been subscribed. You will get sunny notifications!`
-        : `User ${ctx.message.from.first_name} is already subscribed`;
-      ctx.reply(message);
+      const subscriptionStatusMessage = user
+        ? `Success! ${user.displayName} (${user.id}) has been subscribed.`
+        : `User ${ctx.message.from.first_name} is already subscribed.`;
+      const updateLocationMessage =
+        "Please send approximate location for forecast.";
+      ctx.reply(lines(subscriptionStatusMessage, updateLocationMessage));
     }),
   );
+
+  // #endregion
 
   async function forecast(ctx) {
     logger.info(`Running forecast with payload '${ctx.payload}'`);
     try {
-      ctx.reply(await forecastMessage(ctx.payload));
+      const user = await usersDao.getUser(ctx.message.from.id);
+      if (!user.location) {
+        ctx.reply("Please send approximate location for forecast.");
+        return;
+      }
+      ctx.reply(await forecastMessage(ctx.payload, user.location));
     } catch (err) {
       logger.error(err);
     }
@@ -71,27 +82,31 @@ async function main() {
   bot.command("forecast", withAuth(forecast));
 
   // #region cron schedule
-  async function sendMessageToUsers(message) {
-    if (!message) return;
-
-    const users = await usersDao.getUsers();
-    if (users.length === 0) {
-      logger.warn(`User list is empty`);
-      return;
-    }
-
-    for (const user of users) {
-      await bot.telegram.sendMessage(user.id, message);
-    }
-    return;
-  }
+  // for testing use every 5 seconds cron: "*/5 * * * * *"
 
   // morning schedule
   cron.schedule(
     "0 8 * * *",
-    function morningSchedule() {
+    async function morningSchedule() {
       logger.info("Running morningSchedule");
-      morningScheduleMessage().then(sendMessageToUsers).catch(logger.error);
+      const users = await usersDao.getUsers();
+      for await (const user of users) {
+        if (!user.location) {
+          await bot.telegram.sendMessage(
+            user.id,
+            "Please send approximate location for forecast.",
+          );
+          continue;
+        }
+        await morningScheduleMessage(user.location)
+          .then((message) => {
+            if (message) {
+              bot.telegram.sendMessage(user.id, message);
+            }
+            return;
+          })
+          .catch(logger.error);
+      }
     },
     {
       timezone: "Europe/Berlin",
@@ -101,9 +116,26 @@ async function main() {
   // check sunshine for next hour 5 minutes before the hour
   cron.schedule(
     "55 7-16 * * *",
-    function hourlySchedule() {
+    async function hourlySchedule() {
       logger.info(`Running hourlySchedule ${formatTime()}`);
-      hourlyScheduleMessage().then(sendMessageToUsers).catch(logger.error);
+      const users = await usersDao.getUsers();
+      for await (const user of users) {
+        if (!user.location) {
+          await bot.telegram.sendMessage(
+            user.id,
+            "Please send approximate location for forecast.",
+          );
+          continue;
+        }
+        await hourlyScheduleMessage(user.location)
+          .then((message) => {
+            if (message) {
+              bot.telegram.sendMessage(user.id, message);
+            }
+            return;
+          })
+          .catch(logger.error);
+      }
     },
     {
       timezone: "Europe/Berlin",
@@ -115,11 +147,34 @@ async function main() {
   //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
   // );
 
+  // on text message must be one of the last middleware
   bot.on(message("text"), function textMessage(ctx) {
     ctx.reply(
       `Hello ${ctx.message.from.username}. I'm not sure what does '${ctx.message.text}' means...`,
     );
   });
+
+  // #region location
+  // This must be last middleware since it catches any message (but only responds to those with location)
+  function handleLocation(ctx) {
+    if (isLocationValid(ctx.message.location)) {
+      if (!isLocationInGermany(ctx.message.location)) {
+        ctx.reply("Please choose location in Germany");
+        return;
+      }
+
+      // at this point location valid and in germany, so we can update user
+      usersDao
+        .updateLocation(ctx.message.from.id, ctx.message.location)
+        .then(() =>
+          ctx.reply("Location updated. Feel free to update it at any time."),
+        )
+        .catch(() => ctx.reply("Something went wrong when updating location"));
+      return;
+    }
+  }
+  bot.on("message", withAuth(handleLocation));
+  // #endregion
 
   bot.launch();
 
