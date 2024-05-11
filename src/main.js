@@ -4,7 +4,6 @@ import process from "node:process";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
-import { formatTime } from "./timeUtils/index.js";
 import {
   forecastMessage,
   hourlyScheduleMessage,
@@ -12,7 +11,9 @@ import {
 } from "./botActions/index.js";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
+import { isLocationValid, isLocationInGermany } from "./location/index.js";
 import { logger } from "./logger.js";
+import { formatTime } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
 import { withAuth } from "./withAuth.js";
 
@@ -43,6 +44,7 @@ async function main() {
     );
   });
 
+  // #region subscribe and user info
   bot.command(
     "subscribe",
     withAuth(async function subscribe(ctx) {
@@ -52,12 +54,34 @@ async function main() {
         ctx.message.from.first_name,
       );
 
-      const message = user
-        ? `Success! ${user.displayName} (${user.id}) has been subscribed. You will get sunny notifications!`
-        : `User ${ctx.message.from.first_name} is already subscribed`;
-      ctx.reply(message);
+      const subscriptionStatusMessage = user
+        ? `Success! ${user.displayName} (${user.id}) has been subscribed.`
+        : `User ${ctx.message.from.first_name} is already subscribed.`;
+      const updateLocationMessage =
+        "Please send approximate location for forecast.";
+      ctx.reply(lines(subscriptionStatusMessage, updateLocationMessage));
     }),
   );
+
+  function handleLocation(ctx) {
+    if (isLocationValid(ctx.message.location)) {
+      if (!isLocationInGermany(ctx.message.location)) {
+        ctx.reply("Please choose location in Germany");
+        return;
+      }
+
+      // at this point location valid and in germany, so we can update user
+      usersDao
+        .updateLocation(ctx.message.from.id, ctx.message.location)
+        .then(() =>
+          ctx.reply("Location updated. Feel free to update it at any time."),
+        )
+        .catch(() => ctx.reply("Something went wrong when updating location"));
+      return;
+    }
+  }
+  bot.on("message", withAuth(handleLocation));
+  // #endregion
 
   async function forecast(ctx) {
     logger.info(`Running forecast with payload '${ctx.payload}'`);
