@@ -7,12 +7,12 @@ import {
 } from "../timeUtils/index.js";
 import { clamp, normalizer } from "../utils/index.js";
 
-export function getWeather(date) {
+export function getWeather(date, location) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
   const d = formatDate(date);
   const params = new URLSearchParams({
-    latitude: 52.5167,
-    longitude: 13.2833,
+    latitude: location.latitude,
+    longitude: location.longitude,
     hourly: ["weathercode", "cloudcover"].join(","),
     daily: ["sunrise", "sunset"].join(","),
     minutely_15: [

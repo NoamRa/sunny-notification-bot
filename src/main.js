@@ -63,6 +63,99 @@ async function main() {
     }),
   );
 
+  // #endregion
+
+  async function forecast(ctx) {
+    logger.info(`Running forecast with payload '${ctx.payload}'`);
+    try {
+      const user = await usersDao.getUser(ctx.message.from.id);
+      if (!user.location) {
+        ctx.reply("Please send approximate location for forecast.");
+        return;
+      }
+      ctx.reply(await forecastMessage(ctx.payload, user.location));
+    } catch (err) {
+      logger.error(err);
+    }
+  }
+  bot.command("f", withAuth(forecast));
+  bot.command("forecast", withAuth(forecast));
+
+  // #region cron schedule
+  // for testing use every 5 seconds cron: "*/5 * * * * *"
+
+  // morning schedule
+  cron.schedule(
+    "0 8 * * *",
+    async function morningSchedule() {
+      logger.info("Running morningSchedule");
+      const users = await usersDao.getUsers();
+      for await (const user of users) {
+        if (!user.location) {
+          await bot.telegram.sendMessage(
+            user.id,
+            "Please send approximate location for forecast.",
+          );
+          continue;
+        }
+        await morningScheduleMessage(user.location)
+          .then((message) => {
+            if (message) {
+              bot.telegram.sendMessage(user.id, message);
+            }
+            return;
+          })
+          .catch(logger.error);
+      }
+    },
+    {
+      timezone: "Europe/Berlin",
+    },
+  );
+
+  // check sunshine for next hour 5 minutes before the hour
+  cron.schedule(
+    "55 7-16 * * *",
+    async function hourlySchedule() {
+      logger.info(`Running hourlySchedule ${formatTime()}`);
+      const users = await usersDao.getUsers();
+      for await (const user of users) {
+        if (!user.location) {
+          await bot.telegram.sendMessage(
+            user.id,
+            "Please send approximate location for forecast.",
+          );
+          continue;
+        }
+        await hourlyScheduleMessage(user.location)
+          .then((message) => {
+            if (message) {
+              bot.telegram.sendMessage(user.id, message);
+            }
+            return;
+          })
+          .catch(logger.error);
+      }
+    },
+    {
+      timezone: "Europe/Berlin",
+    },
+  );
+  // #endregion
+
+  // bot.command("me", (ctx) =>
+  //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
+  // );
+
+  // on text message must be one of the last middleware
+  bot.on(message("text"), function textMessage(ctx) {
+    ctx.reply(
+      `Hello ${ctx.message.from.username}. I'm not sure what does '${ctx.message.text}' means...`,
+    );
+  });
+
+  // #region location
+  // This must be last middleware since it catches any message (but only responds to those with location)
   function handleLocation(ctx) {
     if (isLocationValid(ctx.message.location)) {
       if (!isLocationInGermany(ctx.message.location)) {
@@ -82,68 +175,6 @@ async function main() {
   }
   bot.on("message", withAuth(handleLocation));
   // #endregion
-
-  async function forecast(ctx) {
-    logger.info(`Running forecast with payload '${ctx.payload}'`);
-    try {
-      ctx.reply(await forecastMessage(ctx.payload));
-    } catch (err) {
-      logger.error(err);
-    }
-  }
-  bot.command("f", withAuth(forecast));
-  bot.command("forecast", withAuth(forecast));
-
-  // #region cron schedule
-  async function sendMessageToUsers(message) {
-    if (!message) return;
-
-    const users = await usersDao.getUsers();
-    if (users.length === 0) {
-      logger.warn(`User list is empty`);
-      return;
-    }
-
-    for (const user of users) {
-      await bot.telegram.sendMessage(user.id, message);
-    }
-    return;
-  }
-
-  // morning schedule
-  cron.schedule(
-    "0 8 * * *",
-    function morningSchedule() {
-      logger.info("Running morningSchedule");
-      morningScheduleMessage().then(sendMessageToUsers).catch(logger.error);
-    },
-    {
-      timezone: "Europe/Berlin",
-    },
-  );
-
-  // check sunshine for next hour 5 minutes before the hour
-  cron.schedule(
-    "55 7-16 * * *",
-    function hourlySchedule() {
-      logger.info(`Running hourlySchedule ${formatTime()}`);
-      hourlyScheduleMessage().then(sendMessageToUsers).catch(logger.error);
-    },
-    {
-      timezone: "Europe/Berlin",
-    },
-  );
-  // #endregion
-
-  // bot.command("me", (ctx) =>
-  //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
-  // );
-
-  bot.on(message("text"), function textMessage(ctx) {
-    ctx.reply(
-      `Hello ${ctx.message.from.username}. I'm not sure what does '${ctx.message.text}' means...`,
-    );
-  });
 
   bot.launch();
 

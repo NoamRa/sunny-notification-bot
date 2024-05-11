@@ -17,6 +17,11 @@ export async function createUsersDAO(DB) {
     return await DB.readEntry(entryKey);
   }
 
+  async function getUser(id) {
+    const users = await getUsers();
+    return users.find((user) => user.id === id);
+  }
+
   async function createUser(id, username, displayName) {
     const users = await getUsers();
     if (users.find((user) => user.id === id)) {
@@ -50,6 +55,7 @@ export async function createUsersDAO(DB) {
   }
 
   return {
+    getUser,
     getUsers,
     createUser,
     updateLocation,

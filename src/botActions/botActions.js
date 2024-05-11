@@ -11,7 +11,7 @@ import {
   getWeather,
 } from "../weather/index.js";
 
-export async function forecastMessage(payload) {
+export async function forecastMessage(payload, location) {
   const forecastDate = resolveDate(payload ?? 0);
   if (!dateIsValid(forecastDate)) {
     return lines(
@@ -20,7 +20,9 @@ export async function forecastMessage(payload) {
     );
   }
 
-  const sunnyRanges = await getWeather(forecastDate).then(getSunnyRanges);
+  const sunnyRanges = await getWeather(forecastDate, location).then(
+    getSunnyRanges,
+  );
   if (sunnyRanges.length >= 1) {
     const date = sunnyRanges[0].start.date;
     return lines(
@@ -34,8 +36,10 @@ export async function forecastMessage(payload) {
   }.`;
 }
 
-export async function hourlyScheduleMessage() {
-  const sunnyRanges = await getWeather().then(getSunnyRanges);
+export async function hourlyScheduleMessage(location) {
+  const sunnyRanges = await getWeather(resolveDate(0), location).then(
+    getSunnyRanges,
+  );
   const nextSunnyRange = sunnyRanges.find((range) => {
     return withinTheHour(range.start.datetime);
   });
@@ -47,8 +51,10 @@ export async function hourlyScheduleMessage() {
   return "";
 }
 
-export async function morningScheduleMessage() {
-  const sunnyRanges = await getWeather().then(getSunnyRanges);
+export async function morningScheduleMessage(location) {
+  const sunnyRanges = await getWeather(resolveDate(0), location).then(
+    getSunnyRanges,
+  );
   const message =
     sunnyRanges.length === 0
       ? "the sun is not expected to make a meaningful appearance today."
