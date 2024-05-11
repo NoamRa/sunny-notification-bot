@@ -1,7 +1,7 @@
 # Sunny Notification Bot
 
 Telegram bot that notifies when it's sunny - https://t.me/SunnyNotificationBot
-![Sunny notification bot demo](./docs/notification_example.png)
+![Sunny notification bot demo](docs/notification_example.png)
 
 This bot is still in alpha, and you must be added to allow list in order to interact with it. Feel free to clone and run locally.
 
