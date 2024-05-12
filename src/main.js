@@ -42,7 +42,8 @@ async function main() {
     // if (ctx.payload === '/subscribe' || ctx.payload === '/f') {} // TODO improve /help
     ctx.reply(
       lines(
-        "/forecast or /f for today's sunny times 🌤",
+        "/forecast or /f - get today's sunny times 🌤",
+        "/location latitude, longitude - update location",
         "/subscribe to notifications",
       ),
     );
@@ -62,7 +63,7 @@ async function main() {
         ? `Success! ${user.displayName} (${user.id}) has been subscribed.`
         : `User ${ctx.message.from.first_name} is already subscribed.`;
       const updateLocationMessage =
-        "Please send approximate location for forecast.";
+        "Please send approximate location for forecast, or use the /location command";
       ctx.reply(lines(subscriptionStatusMessage, updateLocationMessage));
     }),
   );
