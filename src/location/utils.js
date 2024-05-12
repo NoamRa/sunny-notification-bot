@@ -26,3 +26,23 @@ export function isLocationInGermany({ longitude, latitude }) {
     isBetweenNumbers(GERMANY_BBOX.south, latitude, GERMANY_BBOX.north)
   );
 }
+
+export function parseLocationString(payload) {
+  if (!payload || typeof payload !== "string") return null;
+
+  try {
+    const separator = payload.includes(",") ? "," : " ";
+    const parsed = payload
+      .split(separator)
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .map((v) => Number(v))
+      .filter((n) => !isNaN(n));
+
+    if (!Array.isArray(parsed) || parsed.length !== 2) return null;
+
+    return { latitude: parsed[0], longitude: parsed[1] };
+  } catch (err) {
+    return null;
+  }
+}
