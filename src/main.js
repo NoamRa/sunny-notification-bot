@@ -11,7 +11,11 @@ import {
 } from "./botActions/index.js";
 import { BOT_TOKEN } from "./config.js";
 import { DB, createUsersDAO } from "./db/index.js";
-import { isLocationValid, isLocationInGermany } from "./location/index.js";
+import {
+  isLocationValid,
+  isLocationInGermany,
+  parseLocationString,
+} from "./location/index.js";
 import { logger } from "./logger.js";
 import { formatTime } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
@@ -38,7 +42,8 @@ async function main() {
     // if (ctx.payload === '/subscribe' || ctx.payload === '/f') {} // TODO improve /help
     ctx.reply(
       lines(
-        "/forecast or /f for today's sunny times 🌤",
+        "/forecast or /f - get today's sunny times 🌤",
+        "/location latitude, longitude - update location",
         "/subscribe to notifications",
       ),
     );
@@ -58,8 +63,45 @@ async function main() {
         ? `Success! ${user.displayName} (${user.id}) has been subscribed.`
         : `User ${ctx.message.from.first_name} is already subscribed.`;
       const updateLocationMessage =
-        "Please send approximate location for forecast.";
+        "Please send approximate location for forecast, or use the /location command";
       ctx.reply(lines(subscriptionStatusMessage, updateLocationMessage));
+    }),
+  );
+
+  function updateUserLocation(ctx, location) {
+    if (isLocationValid(location)) {
+      if (!isLocationInGermany(location)) {
+        ctx.reply("Please choose location in Germany");
+        return;
+      }
+
+      // at this point location valid and in germany, so we can update user
+      return usersDao
+        .updateLocation(ctx.message.from.id, location)
+        .then(() =>
+          ctx.reply("Location updated. Feel free to update it at any time."),
+        )
+        .catch(() => ctx.reply("Something went wrong when updating location"));
+    }
+  }
+
+  bot.command(
+    "location",
+    withAuth(async function handleLocation(ctx) {
+      const message = lines(
+        "Location must be sent as latitude and longitude, separated by comma. Example",
+        "`/location 52.521,13.295`",
+        "It may be easier to send location from 📎attachment menu",
+      );
+
+      if (!ctx.payload) {
+        return ctx.reply(message);
+      }
+      const location = parseLocationString(ctx.payload);
+      if (!location) {
+        return ctx.reply(message);
+      }
+      return updateUserLocation(ctx, location);
     }),
   );
 
@@ -154,27 +196,15 @@ async function main() {
     );
   });
 
-  // #region location
   // This must be last middleware since it catches any message (but only responds to those with location)
-  function handleLocation(ctx) {
-    if (isLocationValid(ctx.message.location)) {
-      if (!isLocationInGermany(ctx.message.location)) {
-        ctx.reply("Please choose location in Germany");
-        return;
+  bot.on(
+    "message",
+    withAuth(function handleMessageWithLocation(ctx) {
+      if (ctx.message.location) {
+        return updateUserLocation(ctx, ctx.message.location);
       }
-
-      // at this point location valid and in germany, so we can update user
-      usersDao
-        .updateLocation(ctx.message.from.id, ctx.message.location)
-        .then(() =>
-          ctx.reply("Location updated. Feel free to update it at any time."),
-        )
-        .catch(() => ctx.reply("Something went wrong when updating location"));
-      return;
-    }
-  }
-  bot.on("message", withAuth(handleLocation));
-  // #endregion
+    }),
+  );
 
   bot.launch();
 

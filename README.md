@@ -8,7 +8,7 @@ This bot is still in alpha, and you must be added to allow list in order to inte
 ### User manual
 
 As in every bot, start by sending the `/start` command.
-Send command `/subscribe` to subscribe and then send location. The location must be in Germany, doesn't have to be exact, and unfortunately doesn't work from telegram web. Location can be updated at any time.
+Send command `/subscribe` to subscribe and then send location. The location must be in Germany, doesn't have to be exact, and unfortunately doesn't work from telegram web. The `/location` command is an alternative. Location can be updated at any time.
 The bot sends daily forecast in the morning and update notification if it's sunny every hour.
 
 #### Interactions
@@ -19,6 +19,7 @@ The bot sends daily forecast in the morning and update notification if it's sunn
 | `/help`             | List of commands                                                                                                     |
 | `/subscribe`        | Subscribe to Sunny notification bot. This saves user preferences such as location                                    |
 | `/forecast` or `/f` | Get today's forecast. Add number (ex .`/f 1`) to see tomorrow's forecast. Applicable numbers are -1 (yesterday) to 3 |
+| `/location`         | Update location with latitude and longitude, separated by comma. Example `/location 52.521,13.295`.                  |
 
 Sending location updates your preference.
 
