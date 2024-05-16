@@ -45,6 +45,7 @@ async function main() {
         "/forecast or /f - get today's sunny times 🌤",
         "/location latitude, longitude - update location",
         "/subscribe to notifications",
+        "/unsubscribe to delete your data from the system",
       ),
     );
   });
@@ -89,19 +90,56 @@ async function main() {
     "location",
     withAuth(async function handleLocation(ctx) {
       const message = lines(
-        "Location must be sent as latitude and longitude, separated by comma. Example",
-        "`/location 52.521,13.295`",
+        "Location must be sent as latitude and longitude, separated by comma.",
+        "Example: `/location 52.521,13.295`",
         "It may be easier to send location from 📎attachment menu",
       );
 
       if (!ctx.payload) {
-        return ctx.reply(message);
+        return ctx.reply(message, { parse_mode: "Markdown" });
       }
       const location = parseLocationString(ctx.payload);
       if (!location) {
-        return ctx.reply(message);
+        return ctx.reply(message, { parse_mode: "Markdown" });
       }
       return updateUserLocation(ctx, location);
+    }),
+  );
+
+  bot.command(
+    "unsubscribe",
+    withAuth(async function handleUnsubscribe(ctx) {
+      // check user exists
+      const user = await usersDao.getUser(ctx.message.from.id);
+      if (!user) {
+        return ctx.reply("User is not subscribed. Use /subscribe");
+      }
+
+      const deletePayload = "delete me";
+      // make sure user wants to unsubscribe
+      if (ctx.payload === deletePayload) {
+        const deleted = await usersDao.deleteUser(ctx.message.from.id);
+        if (deleted) {
+          return ctx.reply(
+            lines(
+              "You have been deleted.",
+              `Goodbye, ${ctx.message.from.username}. 🌞`,
+            ),
+          );
+        }
+        return ctx.reply(
+          `Failed to delete user with ID '${ctx.message.from.id}'.`,
+        );
+      }
+
+      // explain how to unsubscribe
+      return ctx.reply(
+        lines(
+          `In order to delete yourself please type '\`/unsubscribe ${deletePayload}\`'.`,
+          "This action is non-reversible, all user data will be deleted.",
+        ),
+        { parse_mode: "Markdown" },
+      );
     }),
   );
 

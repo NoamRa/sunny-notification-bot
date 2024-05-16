@@ -54,10 +54,26 @@ export async function createUsersDAO(DB) {
     return res;
   }
 
+  async function deleteUser(userId) {
+    logger.info(`Deleting user with ID '${userId}'`);
+    try {
+      const users = await getUsers();
+      await DB.overwriteEntry(
+        entryKey,
+        users.filter((user) => user.id !== userId),
+      );
+      return true;
+    } catch (err) {
+      logger.error(`Delete user failed for userId '${userId}'`);
+      return false;
+    }
+  }
+
   return {
     getUser,
     getUsers,
     createUser,
     updateLocation,
+    deleteUser,
   };
 }

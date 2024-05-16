@@ -20,6 +20,7 @@ The bot sends daily forecast in the morning and update notification if it's sunn
 | `/subscribe`        | Subscribe to Sunny notification bot. This saves user preferences such as location                                    |
 | `/forecast` or `/f` | Get today's forecast. Add number (ex .`/f 1`) to see tomorrow's forecast. Applicable numbers are -1 (yesterday) to 3 |
 | `/location`         | Update location with latitude and longitude, separated by comma. Example `/location 52.521,13.295`.                  |
+| `/unsubscribe`      | Delete user data from system                                                                                         |
 
 Sending location updates your preference.
 
@@ -91,7 +92,7 @@ npm run dev
 
 - [ ] Retry when `getWeather` fails (communicate failure to user after retries?)
 - [ ] Users
-  - [ ] Users can unsubscribe - completely deleting entry
+  - [x] Users can unsubscribe - completely deleting entry
   - [ ] User can choose wether to get morning notification: none / only when sunny / every morning
   - [ ] User can choose wether to get hourly notifications: yes / no
   - [x] User can set their location
