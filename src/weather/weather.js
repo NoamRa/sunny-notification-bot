@@ -1,4 +1,6 @@
-import { logger } from "../logger.js";
+import retry from "async-retry";
+
+import { logger, serialize } from "../logger.js";
 import {
   formatDate,
   formatTime,
@@ -7,7 +9,7 @@ import {
 } from "../timeUtils/index.js";
 import { clamp, normalizer } from "../utils/index.js";
 
-export function getWeather(date, location) {
+function getWeatherRequest(date, location) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
   const d = formatDate(date);
   const params = new URLSearchParams({
@@ -29,8 +31,18 @@ export function getWeather(date, location) {
       if (response.ok) return response;
       throw response;
     })
-    .then((res) => res.json())
-    .catch(logger.error);
+    .then((res) => res.json());
+}
+
+export async function getWeather(date, location) {
+  const getWeatherTask = () => {
+    return getWeatherRequest(date, location);
+  };
+
+  return await retry(getWeatherTask, { retries: 3 }).catch((err) => {
+    logger.error(serialize(err));
+    throw "Get weather failed due to network error.";
+  });
 }
 
 export function getSunnyRanges(rawData) {

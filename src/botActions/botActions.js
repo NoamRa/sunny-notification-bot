@@ -20,9 +20,12 @@ export async function forecastMessage(payload, location) {
     );
   }
 
-  const sunnyRanges = await getWeather(forecastDate, location).then(
-    getSunnyRanges,
-  );
+  let sunnyRanges;
+  try {
+    sunnyRanges = await getWeather(forecastDate, location).then(getSunnyRanges);
+  } catch (errMessage) {
+    return errMessage;
+  }
   if (sunnyRanges.length >= 1) {
     const date = sunnyRanges[0].start.date;
     return lines(
@@ -37,9 +40,14 @@ export async function forecastMessage(payload, location) {
 }
 
 export async function hourlyScheduleMessage(location) {
-  const sunnyRanges = await getWeather(resolveDate(0), location).then(
-    getSunnyRanges,
-  );
+  let sunnyRanges;
+  try {
+    sunnyRanges = await getWeather(resolveDate(0), location).then(
+      getSunnyRanges,
+    );
+  } catch (errMessage) {
+    return errMessage;
+  }
   const nextSunnyRange = sunnyRanges.find((range) => {
     return withinTheHour(range.start.datetime);
   });
@@ -52,9 +60,14 @@ export async function hourlyScheduleMessage(location) {
 }
 
 export async function morningScheduleMessage(location) {
-  const sunnyRanges = await getWeather(resolveDate(0), location).then(
-    getSunnyRanges,
-  );
+  let sunnyRanges;
+  try {
+    sunnyRanges = await getWeather(resolveDate(0), location).then(
+      getSunnyRanges,
+    );
+  } catch (errMessage) {
+    return errMessage;
+  }
   const message =
     sunnyRanges.length === 0
       ? "the sun is not expected to make a meaningful appearance today."
