@@ -90,9 +90,10 @@ npm run dev
 
 ### TODO
 
-- [ ] Retry when `getWeather` fails (communicate failure to user after retries?)
+- [x] Retry when `getWeather` fails (communicate failure to user after retries?)
 - [ ] Users
   - [x] Users can unsubscribe - completely deleting entry
   - [ ] User can choose wether to get morning notification: none / only when sunny / every morning
   - [ ] User can choose wether to get hourly notifications: yes / no
   - [x] User can set their location
+- [ ] Reduce API calls using cache
