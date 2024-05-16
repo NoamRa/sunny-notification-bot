@@ -55,7 +55,7 @@ export async function createUsersDAO(DB) {
   }
 
   async function deleteUser(userId) {
-    logger.error(`Deleting user with ID '${userId}'`);
+    logger.info(`Deleting user with ID '${userId}'`);
     try {
       const users = await getUsers();
       await DB.overwriteEntry(

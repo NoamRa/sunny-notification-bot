@@ -118,7 +118,7 @@ async function main() {
       const deletePayload = "delete me";
       // make sure user wants to unsubscribe
       if (ctx.payload === deletePayload) {
-        const deleted = usersDao.deleteUser(ctx.message.from.id);
+        const deleted = await usersDao.deleteUser(ctx.message.from.id);
         if (deleted) {
           return ctx.reply(
             lines(
@@ -136,7 +136,7 @@ async function main() {
       return ctx.reply(
         lines(
           `In order to delete yourself please type '\`/unsubscribe ${deletePayload}\`'.`,
-          "This action is non-reversible, all user data will be deleted",
+          "This action is non-reversible, all user data will be deleted.",
         ),
         { parse_mode: "Markdown" },
       );
