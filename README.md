@@ -20,6 +20,7 @@ The bot sends daily forecast in the morning and update notification if it's sunn
 | `/subscribe`        | Subscribe to Sunny notification bot. This saves user preferences such as location                                    |
 | `/forecast` or `/f` | Get today's forecast. Add number (ex .`/f 1`) to see tomorrow's forecast. Applicable numbers are -1 (yesterday) to 3 |
 | `/location`         | Update location with latitude and longitude, separated by comma. Example `/location 52.521,13.295`.                  |
+| `/unsubscribe`      | Delete user data from system                                                                                         |
 
 Sending location updates your preference.
 
