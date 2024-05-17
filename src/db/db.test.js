@@ -4,9 +4,9 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { DB } from "./db.js";
 
-const mockedReadFile = vi.spyOn(fs, "readFile");
+const mockedReadFile = vi.spyOn(fs, "readFile").mockResolvedValue();
 const mockedWriteFile = vi.spyOn(fs, "writeFile").mockResolvedValue();
-const mockedStat = vi.spyOn(fs, "stat");
+const mockedStat = vi.spyOn(fs, "stat").mockResolvedValue(true);
 
 const dbPath = "fooBar.json";
 
