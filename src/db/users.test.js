@@ -5,7 +5,7 @@ import { DB } from "./db.js";
 import { createUsersDAO } from "./users.js";
 
 const mockedReadFile = vi.spyOn(fs, "readFile");
-const mockedWriteFile = vi.spyOn(fs, "writeFile");
+const mockedWriteFile = vi.spyOn(fs, "writeFile").mockResolvedValue();
 const mockedStat = vi
   .spyOn(fs, "stat")
   .mockResolvedValue("it's ok, db file exists :D");
