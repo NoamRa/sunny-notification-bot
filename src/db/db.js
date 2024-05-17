@@ -21,7 +21,7 @@ export async function DB(dbPath) {
   try {
     await fs.stat(dbPath);
   } catch (err) {
-    if (err.message.includes("no such file or directory"))
+    if (err?.message.includes("no such file or directory"))
       await write(JSON.stringify({}));
     else {
       throw err;
