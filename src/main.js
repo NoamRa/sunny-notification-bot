@@ -46,7 +46,10 @@ async function main() {
         "/location latitude, longitude - update location",
         "/subscribe to notifications",
         "/unsubscribe to delete your data from the system",
+        "",
+        "Want to learn more? [Check out the project on GitHub](https://github.com/NoamRa/sunny-notification-bot).",
       ),
+      { parse_mode: "Markdown", link_preview_options: { is_disabled: true } },
     );
   });
 
