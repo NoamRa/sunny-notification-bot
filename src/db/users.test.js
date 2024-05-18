@@ -116,7 +116,7 @@ describe("Test users", () => {
     expect(user).toStrictEqual(user3);
   });
 
-  test("update location", async () => {
+  test("add location", async () => {
     mockedReadFile.mockResolvedValue(
       JSON.stringify({ USERS: [user1, user2, user3] }),
     );
@@ -133,6 +133,73 @@ describe("Test users", () => {
           USERS: [
             user1,
             { ...user2, location: { latitude: 741, longitude: 963 } },
+            user3,
+          ],
+        },
+        null,
+        2,
+      ),
+      { encoding: "utf-8" },
+    );
+  });
+
+  test("update location", async () => {
+    const user2WithLocation = {
+      ...user2,
+      location: { latitude: 741, longitude: 963 },
+    };
+
+    mockedReadFile.mockResolvedValue(
+      JSON.stringify({ USERS: [user1, user2WithLocation, user3] }),
+    );
+    const users = await createUsersDAO(await DB(dbPath));
+
+    await users.updateLocation(user2.id, {
+      latitude: 123,
+      longitude: 456,
+    });
+    expect(mockedWriteFile).toHaveBeenCalledWith(
+      dbPath,
+      JSON.stringify(
+        {
+          USERS: [
+            user1,
+            {
+              ...user2WithLocation,
+              location: { latitude: 123, longitude: 456 },
+            },
+            user3,
+          ],
+        },
+        null,
+        2,
+      ),
+      { encoding: "utf-8" },
+    );
+  });
+
+  test("update user notification", async () => {
+    mockedReadFile.mockResolvedValue(
+      JSON.stringify({ USERS: [user1, user2, user3] }),
+    );
+    const users = await createUsersDAO(await DB(dbPath));
+
+    await users.updateNotifications(user2.id, {
+      hourly: "yes please",
+    });
+    expect(mockedWriteFile).toHaveBeenCalledWith(
+      dbPath,
+      JSON.stringify(
+        {
+          USERS: [
+            user1,
+            {
+              ...user2,
+              notifications: {
+                ...user2.notifications,
+                hourly: "yes please",
+              },
+            },
             user3,
           ],
         },

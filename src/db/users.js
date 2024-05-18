@@ -1,4 +1,8 @@
 import { logger, serialize } from "../logger.js";
+import {
+  createDefaultNotificationObject,
+  updateNotificationsObject,
+} from "./notifications.js";
 
 export async function createUsersDAO(DB) {
   const entryKey = "USERS";
@@ -7,7 +11,7 @@ export async function createUsersDAO(DB) {
   try {
     const users = await getUsers();
     if (!Array.isArray(users)) {
-      DB.overwriteEntry(entryKey, []);
+      await DB.overwriteEntry(entryKey, []);
     }
   } catch (err) {
     logger.error(`Error in UsersDAO init: ${serialize(err)}`);
@@ -28,30 +32,38 @@ export async function createUsersDAO(DB) {
       logger.error(`Error: user with id ${id} already exists.`);
       return false;
     }
-    const newUser = { id, username, displayName };
+    const newUser = {
+      id,
+      username,
+      displayName,
+      notifications: createDefaultNotificationObject(),
+    };
     await DB.overwriteEntry(entryKey, [...users, newUser]);
     return newUser;
   }
 
-  async function updateLocation(userId, location) {
+  async function updateUser(userId, updateFn = (user) => user) {
     const users = await getUsers();
     const userIndex = users.findIndex((user) => user.id === userId);
     if (userIndex === -1) {
-      logger.error(`updateLocation failed to find user with ID '${userId}'`);
+      logger.error(`updateUser failed to find user with ID '${userId}'`);
       return;
     }
 
-    const currentUser = users[userIndex];
-    const updatedUser = { ...currentUser, location };
-    users[userIndex] = updatedUser;
+    users[userIndex] = updateFn(users[userIndex]);
 
-    const res = await DB.overwriteEntry(entryKey, [...users]);
-    logger.debug(
-      `User updated. Before: ${JSON.stringify(
-        currentUser,
-      )}. After: ${JSON.stringify(updatedUser)}`,
-    );
-    return res;
+    return await DB.overwriteEntry(entryKey, [...users]);
+  }
+
+  async function updateLocation(userId, location) {
+    return updateUser(userId, (user) => ({ ...user, location }));
+  }
+
+  async function updateNotifications(userId, notifications) {
+    return updateUser(userId, (user) => ({
+      ...user,
+      notifications: updateNotificationsObject(user, notifications),
+    }));
   }
 
   async function deleteUser(userId) {
@@ -74,6 +86,7 @@ export async function createUsersDAO(DB) {
     getUsers,
     createUser,
     updateLocation,
+    updateNotifications,
     deleteUser,
   };
 }
