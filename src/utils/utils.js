@@ -30,3 +30,8 @@ export function normalizer(min, max) {
     return (value - min) / (max - min);
   };
 }
+
+export function hasOwnProp(obj, prop) {
+  if (!obj || typeof obj !== "object" || typeof prop !== "string") return false;
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
