@@ -44,13 +44,12 @@ async function main() {
   });
 
   bot.help(function help(ctx) {
-    // if (ctx.payload === '/forecast' || ctx.payload === '/f') {} // TODO improve /help
-    // if (ctx.payload === '/subscribe' || ctx.payload === '/f') {} // TODO improve /help
     ctx.reply(
       lines(
         "/forecast or /f - get today's sunny times 🌤",
         "/location latitude, longitude - update location",
-        "/subscribe to notifications",
+        "/notifications - change or check notification preferences",
+        "/subscribe to bot (only need to do that once)",
         "/unsubscribe to delete your data from the system",
         "",
         "Want to learn more? [Check out the project on GitHub](https://github.com/NoamRa/sunny-notification-bot).",
