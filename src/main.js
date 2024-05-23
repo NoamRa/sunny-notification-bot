@@ -1,8 +1,8 @@
 import cron from "node-cron";
 import path from "node:path";
 import process from "node:process";
-import { Telegraf, Markup } from "telegraf";
-import { callbackQuery, message } from "telegraf/filters";
+import { Markup, Telegraf } from "telegraf";
+import { message } from "telegraf/filters";
 
 import {
   forecastMessage,

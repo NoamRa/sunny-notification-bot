@@ -17,7 +17,7 @@ describe("Test DB", () => {
 
   test("init - no file", async () => {
     mockedStat.mockRejectedValue(new Error("no such file or directory"));
-    const db = await DB(dbPath);
+    await DB(dbPath);
 
     expect(mockedWriteFile).toHaveBeenCalledWith(
       dbPath,

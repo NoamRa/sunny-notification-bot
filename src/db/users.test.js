@@ -6,9 +6,7 @@ import { createUsersDAO } from "./users.js";
 
 const mockedReadFile = vi.spyOn(fs, "readFile");
 const mockedWriteFile = vi.spyOn(fs, "writeFile").mockResolvedValue();
-const mockedStat = vi
-  .spyOn(fs, "stat")
-  .mockResolvedValue("it's ok, db file exists :D");
+vi.spyOn(fs, "stat").mockResolvedValue("it's ok, db file exists :D");
 const dbPath = "fooBar.json";
 
 const user1 = {
