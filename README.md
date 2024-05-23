@@ -20,11 +20,16 @@ The bot sends daily forecast in the morning and update notification if it's sunn
 | `/subscribe`        | Subscribe to Sunny notification bot. This saves user preferences such as location                                    |
 | `/forecast` or `/f` | Get today's forecast. Add number (ex .`/f 1`) to see tomorrow's forecast. Applicable numbers are -1 (yesterday) to 3 |
 | `/location`         | Update location with latitude and longitude, separated by comma. Example `/location 52.521,13.295`.                  |
+| `/notifications`    | Change or check notification preferences.                                                                            |
 | `/unsubscribe`      | Delete user data from system                                                                                         |
 
-Sending location updates your preference.
+Sending location using Telegram app updates your preference.
+
+---
 
 ### Run
+
+After [first time setup](#first-time-setup)
 
 ```console
 npm start
@@ -34,25 +39,26 @@ npm start
 
 #### First time setup
 
-```console
-git clone https://github.com/NoamRa/sunny-notification-bot.git
-cd sunny-notification-bot
-npm install
-```
+1. Clone and install
 
-Fill `.env` file
+   ```console
+   git clone https://github.com/NoamRa/sunny-notification-bot.git
+   cd sunny-notification-bot
+   npm install
+   ```
 
-```console
-cp example.env .env
-```
+2. Fill `.env` file
 
-and add the bot's token from [BotFather](https://t.me/botfather) and allowed users
+   ```console
+   cp example.env .env
+   ```
 
-To develop use
+3. Add the bot's token from [BotFather](https://t.me/botfather) and allowed users
 
-```console
-npm run dev
-```
+4. To develop, run
+   ```console
+   npm run dev
+   ```
 
 #### Steps to run attended
 
@@ -91,9 +97,10 @@ npm run dev
 ### TODO
 
 - [x] Retry when `getWeather` fails (communicate failure to user after retries?)
-- [ ] Users
+- [x] Users
   - [x] Users can unsubscribe - completely deleting entry
-  - [ ] User can choose wether to get morning notification: none / only when sunny / every morning
-  - [ ] User can choose wether to get hourly notifications: yes / no
+  - [x] User can choose wether to get morning notification: none / only when sunny / every morning
+  - [x] User can choose wether to get hourly notifications: yes / no
   - [x] User can set their location
 - [ ] Reduce API calls using cache
+- [ ] TypeScript
