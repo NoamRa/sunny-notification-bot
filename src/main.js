@@ -1,8 +1,8 @@
 import cron from "node-cron";
 import path from "node:path";
 import process from "node:process";
-import { Telegraf } from "telegraf";
-import { message } from "telegraf/filters";
+import { Telegraf, Markup } from "telegraf";
+import { callbackQuery, message } from "telegraf/filters";
 
 import {
   forecastMessage,
@@ -10,10 +10,16 @@ import {
   morningScheduleMessage,
 } from "./botActions/index.js";
 import { BOT_TOKEN } from "./config.js";
-import { DB, createUsersDAO } from "./db/index.js";
 import {
-  isLocationValid,
+  DB,
+  HourlyNotification,
+  MorningNotification,
+  createUsersDAO,
+  notificationsIsValid,
+} from "./db/index.js";
+import {
   isLocationInGermany,
+  isLocationValid,
   parseLocationString,
 } from "./location/index.js";
 import { logger } from "./logger.js";
@@ -109,6 +115,114 @@ async function main() {
     }),
   );
 
+  function updateNotification(notifications) {
+    return async function updater(ctx) {
+      if (!notificationsIsValid(notifications)) {
+        return ctx.reply("Notification is formatted incorrectly");
+      }
+      await usersDao.updateNotifications(
+        ctx.update.callback_query.from.id,
+        notifications,
+      );
+      return ctx.reply("Done");
+    };
+  }
+
+  bot.command(
+    "notifications",
+    withAuth(function chooseNotification(ctx) {
+      return ctx.reply(
+        "Which notification do you want to set?",
+        Markup.inlineKeyboard([
+          Markup.button.callback(
+            "Morning notification",
+            "show morning notification options",
+          ),
+          Markup.button.callback(
+            "Hourly notification",
+            "show hourly notification options",
+          ),
+          Markup.button.callback(
+            "Show current settings",
+            "show current notification",
+          ),
+        ]),
+      );
+    }),
+  );
+  bot.action("show current notification", async function showNotification(ctx) {
+    const user = await usersDao.getUser(ctx.update.callback_query.from.id);
+    if (!user) {
+      logger.error(
+        `Failed to find user with ID '${ctx.update.callback_query.from.id}'`,
+      );
+      return ctx.reply("Something went wrong, failed to find user");
+    }
+
+    return ctx.reply(
+      lines(
+        `Morning notifications set to ${user.notifications.morning}`,
+        `Hourly notifications set to ${user.notifications.hourly}`,
+      ),
+    );
+  });
+
+  bot.action(
+    "show morning notification options",
+    function chooseMorningNotification(ctx) {
+      return ctx.reply(
+        "Do you want to receive morning notifications?",
+        Markup.inlineKeyboard([
+          Markup.button.callback(
+            "Yes, always",
+            "set morning notifications always",
+          ),
+          Markup.button.callback(
+            "Sunny days only",
+            "set morning notifications sunny",
+          ),
+          Markup.button.callback(
+            "No, thanks",
+            "set morning notifications none",
+          ),
+        ]),
+      );
+    },
+  );
+  bot.action(
+    "set morning notifications always",
+    updateNotification({ morning: MorningNotification.Always }),
+  );
+  bot.action(
+    "set morning notifications sunny",
+    updateNotification({ morning: MorningNotification.Sunny }),
+  );
+  bot.action(
+    "set morning notifications none",
+    updateNotification({ morning: MorningNotification.None }),
+  );
+
+  bot.action(
+    "show hourly notification options",
+    function chooseMorningNotification(ctx) {
+      return ctx.reply(
+        "Do you want to receive hourly notifications?",
+        Markup.inlineKeyboard([
+          Markup.button.callback("Yes", "set hourly notifications yes"),
+          Markup.button.callback("No", "set hourly notifications no"),
+        ]),
+      );
+    },
+  );
+  bot.action(
+    "set hourly notifications yes",
+    updateNotification({ hourly: HourlyNotification.Yes }),
+  );
+  bot.action(
+    "set hourly notifications no",
+    updateNotification({ hourly: HourlyNotification.No }),
+  );
+
   bot.command(
     "unsubscribe",
     withAuth(async function handleUnsubscribe(ctx) {
@@ -174,6 +288,9 @@ async function main() {
       logger.info("Running morningSchedule");
       const users = await usersDao.getUsers();
       for await (const user of users) {
+        if (user.notifications.morning === MorningNotification.None) {
+          continue;
+        }
         if (!user.location) {
           await bot.telegram.sendMessage(
             user.id,
@@ -183,9 +300,17 @@ async function main() {
         }
         await morningScheduleMessage(user.location)
           .then((message) => {
-            if (message) {
-              bot.telegram.sendMessage(user.id, message);
+            if (!message) return;
+            if (
+              user.notifications.morning === MorningNotification.Sunny &&
+              message.includes(
+                "the sun is not expected to make a meaningful appearance today.",
+              )
+            ) {
+              return;
             }
+
+            bot.telegram.sendMessage(user.id, message);
             return;
           })
           .catch(logger.error);
@@ -203,6 +328,7 @@ async function main() {
       logger.info(`Running hourlySchedule ${formatTime()}`);
       const users = await usersDao.getUsers();
       for await (const user of users) {
+        if (user.notifications.hourly === HourlyNotification.No) continue;
         if (!user.location) {
           await bot.telegram.sendMessage(
             user.id,

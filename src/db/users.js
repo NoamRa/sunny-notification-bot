@@ -52,7 +52,8 @@ export async function createUsersDAO(DB) {
 
     users[userIndex] = updateFn(users[userIndex]);
 
-    return await DB.overwriteEntry(entryKey, [...users]);
+    await DB.overwriteEntry(entryKey, [...users]);
+    return;
   }
 
   async function updateLocation(userId, location) {
