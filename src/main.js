@@ -4,6 +4,7 @@ import process from "node:process";
 import { Markup, Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
+import PackageJSON from "./../package.json" assert { type: "json" };
 import {
   forecastMessage,
   hourlyScheduleMessage,
@@ -27,7 +28,9 @@ import { formatTime } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
 import { withAuth } from "./withAuth.js";
 
-logger.info("Starting Sunny notification bot");
+const botVersion = PackageJSON.version;
+
+logger.info(`Starting Sunny notification bot ver ${botVersion}`);
 async function main() {
   const bot = new Telegraf(BOT_TOKEN);
 
@@ -52,6 +55,7 @@ async function main() {
         "/subscribe to bot (only need to do that once)",
         "/unsubscribe to delete your data from the system",
         "",
+        `Sunny notification bot v${botVersion}`,
         "Want to learn more? [Check out the project on GitHub](https://github.com/NoamRa/sunny-notification-bot).",
       ),
       { parse_mode: "Markdown", link_preview_options: { is_disabled: true } },
