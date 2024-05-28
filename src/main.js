@@ -51,6 +51,7 @@ async function main() {
     ctx.reply(
       lines(
         "/forecast or /f - get today's sunny times 🌤",
+        "/location - check the current location for forecast",
         "/location latitude, longitude - update location",
         "/notifications - change or check notification preferences",
         "/subscribe to bot (only need to do that once)",
