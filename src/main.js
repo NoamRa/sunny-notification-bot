@@ -1,10 +1,10 @@
 import cron from "node-cron";
+import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { Markup, Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 
-import PackageJSON from "./../package.json" assert { type: "json" };
 import {
   forecastMessage,
   hourlyScheduleMessage,
@@ -28,6 +28,7 @@ import { formatTime } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
 import { withAuth } from "./withAuth.js";
 
+const PackageJSON = JSON.parse(fs.readFileSync("./package.json"));
 const botVersion = PackageJSON.version;
 
 logger.info(`Starting Sunny notification bot ver ${botVersion}`);
