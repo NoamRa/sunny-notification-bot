@@ -77,7 +77,7 @@ async function main() {
         ? `Success! ${user.displayName} (${user.id}) has been subscribed.`
         : `User ${ctx.message.from.first_name} is already subscribed.`;
       const updateLocationMessage =
-        "Please send approximate location for forecast, or use the /location command";
+        "Please send approximate location for forecast, or use the /location command.";
       ctx.reply(lines(subscriptionStatusMessage, updateLocationMessage));
     }),
   );
@@ -85,7 +85,7 @@ async function main() {
   function updateUserLocation(ctx, location) {
     if (isLocationValid(location)) {
       if (!isLocationInGermany(location)) {
-        ctx.reply("Please choose location in Germany");
+        ctx.reply("Please choose location in Germany.");
         return;
       }
 
@@ -103,18 +103,38 @@ async function main() {
     "location",
     withAuth(async function handleLocation(ctx) {
       const message = lines(
-        "Location must be sent as latitude and longitude, separated by comma.",
-        "Example: `/location 52.521,13.295`",
-        "It may be easier to send location from 📎attachment menu",
+        "Send location from the 📎attachment menu, or with the /location command.",
+        "If using the /location command, values must be sent as latitude and longitude, separated by comma:",
+        "`/location 52.521,13.295`",
       );
 
+      // user just sent /location, without payload
       if (!ctx.payload) {
-        return ctx.reply(message, { parse_mode: "Markdown" });
+        const user = await usersDao.getUser(ctx.message.from.id);
+
+        // user did not set location yes - explain how to set
+        if (!user.location) {
+          return ctx.reply(lines("You didn't send location yet.", ...message), {
+            parse_mode: "Markdown",
+          });
+        }
+
+        // user set location - display what's stored
+        ctx.reply("Location for forecast is:");
+        return ctx.sendLocation(
+          user.location.latitude,
+          user.location.longitude,
+        );
       }
+
+      // there is payload...
       const location = parseLocationString(ctx.payload);
+      // ...but it's not location
       if (!location) {
         return ctx.reply(message, { parse_mode: "Markdown" });
       }
+
+      // ...and it's a valid location!
       return updateUserLocation(ctx, location);
     }),
   );
