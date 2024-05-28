@@ -25,6 +25,10 @@ The bot sends daily forecast in the morning and update notification if it's sunn
 
 Sending location using Telegram app updates your preference.
 
+### Contributing
+
+Missing a feature? Found a bug? Please [create an issue](https://github.com/NoamRa/sunny-notification-bot/issues).
+
 ---
 
 ### Run
@@ -93,14 +97,3 @@ npm start
   node --inspect=0.0.0.0:9229 --max-old-space-size=abc ./src/main.js
   ```
 - Server should appear as remote target. Click inspect to open Chrome DevTools.
-
-### TODO
-
-- [x] Retry when `getWeather` fails (communicate failure to user after retries?)
-- [x] Users
-  - [x] Users can unsubscribe - completely deleting entry
-  - [x] User can choose wether to get morning notification: none / only when sunny / every morning
-  - [x] User can choose wether to get hourly notifications: yes / no
-  - [x] User can set their location
-- [ ] Reduce API calls using cache
-- [ ] TypeScript
