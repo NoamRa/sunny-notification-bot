@@ -14,7 +14,7 @@ import {
   sunny_morning_2023_11_22,
   very_sunny_day_2023_11_26,
   sunny_afternoon_2023_11_28,
-} from "../weather/openMeteo.mocks.js";
+} from "../weather/tests/openMeteo.mocks.js";
 
 import * as WeatherModule from "../weather/weather.js";
 
