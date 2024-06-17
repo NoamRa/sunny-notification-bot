@@ -1,4 +1,8 @@
-import retry from "async-retry";
+import { QueryClient, QueryCache } from "@tanstack/query-core";
+
+const queryClient = new QueryClient({
+  queryCache: new QueryCache(),
+});
 
 import { logger, serialize } from "../logger.js";
 import {
@@ -35,14 +39,17 @@ function getWeatherRequest(date, location) {
 }
 
 export async function getWeather(date, location) {
-  const getWeatherTask = () => {
-    return getWeatherRequest(date, location);
-  };
-
-  return await retry(getWeatherTask, { retries: 3 }).catch((err) => {
-    logger.error(serialize(err));
-    throw "Get weather failed due to network error.";
-  });
+  return queryClient
+    .fetchQuery({
+      queryKey: ["weather", date, location],
+      queryFn: () => getWeatherRequest(date, location),
+      staleTime: 300_000, // five minutes
+      retry: 3,
+    })
+    .catch((err) => {
+      logger.error(serialize(err));
+      throw "Get weather failed due to network error.";
+    });
 }
 
 export function getSunnyRanges(rawData) {

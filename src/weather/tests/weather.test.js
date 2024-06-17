@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { getSunnyRanges } from "./index.js";
+import { getSunnyRanges } from "../index.js";
 import {
   day_without_sun_2023_11_25,
   sunny_morning_2023_11_13,
