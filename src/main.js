@@ -103,11 +103,11 @@ async function main() {
   bot.command(
     "location",
     withAuth(async function handleLocation(ctx) {
-      const message = lines(
+      const explanation = [
         "Send location from the 📎attachment menu, or with the /location command.",
         "If using the /location command, values must be sent as latitude and longitude, separated by comma:",
         "`/location 52.521,13.295`",
-      );
+      ];
 
       // user just sent /location, without payload
       if (!ctx.payload) {
@@ -115,9 +115,12 @@ async function main() {
 
         // user did not set location yes - explain how to set
         if (!user.location) {
-          return ctx.reply(lines("You didn't send location yet.", ...message), {
-            parse_mode: "Markdown",
-          });
+          return ctx.reply(
+            lines("You didn't send location yet.", ...explanation),
+            {
+              parse_mode: "Markdown",
+            },
+          );
         }
 
         // user set location - display what's stored
@@ -132,7 +135,7 @@ async function main() {
       const location = parseLocationString(ctx.payload);
       // ...but it's not location
       if (!location) {
-        return ctx.reply(message, { parse_mode: "Markdown" });
+        return ctx.reply(lines(explanation), { parse_mode: "Markdown" });
       }
 
       // ...and it's a valid location!
