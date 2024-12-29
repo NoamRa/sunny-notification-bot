@@ -42,7 +42,8 @@ async function main() {
     ctx.reply(
       lines(
         "Hi, I'm Sunny Notification Bot. 👋🏼",
-        "Type /help for list of commands.",
+        "Start by subscribing with the /subscribe command",
+        "Type /help for full list of commands.",
       ),
     );
   });
@@ -50,12 +51,14 @@ async function main() {
   bot.help(function help(ctx) {
     ctx.reply(
       lines(
-        "/forecast or /f - get today's sunny times 🌤",
-        "/location - check the current location for forecast",
-        "/location latitude, longitude - update location",
-        "/notifications - change or check notification preferences",
-        "/subscribe to bot (only need to do that once)",
-        "/unsubscribe to delete your data from the system",
+        "Available commands:",
+        "• /forecast or /f - get today's sunny times 🌤",
+        "• /location - check the current location for forecast",
+        "• /location latitude, longitude - update location",
+        "• /notifications - change or check notification preferences",
+        "• /subscribe to bot (only need to do that once)",
+        "• /unsubscribe to delete your data from the system",
+        "• /me to see your Telegram username and ID",
         "",
         `Sunny notification bot v${botVersion}`,
         "Want to learn more? [Check out the project on GitHub](https://github.com/NoamRa/sunny-notification-bot).",
@@ -294,6 +297,10 @@ async function main() {
     logger.info(`Running forecast with payload '${ctx.payload}'`);
     try {
       const user = await usersDao.getUser(ctx.message.from.id);
+      if (!user) {
+        ctx.reply("Please /subscribe");
+        return;
+      }
       if (!user.location) {
         ctx.reply("Please send approximate location for forecast.");
         return;
