@@ -380,18 +380,22 @@ async function main() {
   );
   // #endregion
 
-  // bot.command("me", (ctx) =>
-  //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
-  // );
+  bot.command("me", function userInfo(ctx) {
+    if (ctx.message.from && ctx.message.from.is_bot === false) {
+      const { username, id } = ctx.message.from;
+      return ctx.reply(`You are @${username}, user ID: ${id}`);
+    }
+  });
 
-  // on text message must be one of the last middleware
+  // On any text message, must be one of the last middleware
   bot.on(message("text"), function textMessage(ctx) {
     ctx.reply(
-      `Hello ${ctx.message.from.username}. I'm not sure what does '${ctx.message.text}' means...`,
+      `Hello ${ctx.message.from.username}. I'm not sure what does that means...`,
     );
   });
 
-  // This must be last middleware since it catches any message (but only responds to those with location)
+  // This must be last middleware since it catches any message
+  // (but it only responds to messages with location)
   bot.on(
     "message",
     withAuth(function handleMessageWithLocation(ctx) {
