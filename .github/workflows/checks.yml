@@ -18,7 +18,7 @@ jobs:
       - name: Nodejs Setup
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 20 # If changing here, also update .nvmrc file!
 
       - name: Cache node modules
         id: cache-npm
