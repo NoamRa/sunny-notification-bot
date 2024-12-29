@@ -7,11 +7,11 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=128 nodemon ./src/main.js",
     "lint": "eslint src",
-    "start": "cross-env NODE_OPTIONS=--max-old-space-size=128 node ./src/main.js",
+    "prepare": "husky install",
     "start:unattended": "git pull origin main && npm ci && npm start",
-    "test": "vitest --dir ./src",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=128 node ./src/main.js",
     "test:ci": "vitest --run",
-    "prepare": "husky install"
+    "test": "vitest --dir ./src"
   },
   "keywords": [],
   "author": "",
