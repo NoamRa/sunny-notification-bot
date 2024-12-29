@@ -308,6 +308,12 @@ async function main() {
       ctx.reply(await forecastMessage(ctx.payload, user.location));
     } catch (err) {
       logger.error(err);
+      ctx.reply(
+        lines(
+          "Something went wrong, please try again in a few minute.",
+          "If problem persists, please contact admin",
+        ),
+      );
     }
   }
   bot.command("f", withAuth(forecast));
