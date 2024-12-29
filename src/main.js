@@ -42,7 +42,8 @@ async function main() {
     ctx.reply(
       lines(
         "Hi, I'm Sunny Notification Bot. 👋🏼",
-        "Type /help for list of commands.",
+        "Start by subscribing with the /subscribe command",
+        "Type /help for full list of commands.",
       ),
     );
   });
@@ -50,12 +51,14 @@ async function main() {
   bot.help(function help(ctx) {
     ctx.reply(
       lines(
-        "/forecast or /f - get today's sunny times 🌤",
-        "/location - check the current location for forecast",
-        "/location latitude, longitude - update location",
-        "/notifications - change or check notification preferences",
-        "/subscribe to bot (only need to do that once)",
-        "/unsubscribe to delete your data from the system",
+        "Available commands:",
+        "• /forecast or /f - get today's sunny times 🌤",
+        "• /location - check the current location for forecast",
+        "• /location latitude, longitude - update location",
+        "• /notifications - change or check notification preferences",
+        "• /subscribe to bot (only need to do that once)",
+        "• /unsubscribe to delete your data from the system",
+        "• /me to see your Telegram username and ID",
         "",
         `Sunny notification bot v${botVersion}`,
         "Want to learn more? [Check out the project on GitHub](https://github.com/NoamRa/sunny-notification-bot).",
@@ -294,6 +297,10 @@ async function main() {
     logger.info(`Running forecast with payload '${ctx.payload}'`);
     try {
       const user = await usersDao.getUser(ctx.message.from.id);
+      if (!user) {
+        ctx.reply("Please /subscribe");
+        return;
+      }
       if (!user.location) {
         ctx.reply("Please send approximate location for forecast.");
         return;
@@ -301,6 +308,12 @@ async function main() {
       ctx.reply(await forecastMessage(ctx.payload, user.location));
     } catch (err) {
       logger.error(err);
+      ctx.reply(
+        lines(
+          "Something went wrong, please try again in a few minute.",
+          "If problem persists, please contact admin",
+        ),
+      );
     }
   }
   bot.command("f", withAuth(forecast));
@@ -380,18 +393,22 @@ async function main() {
   );
   // #endregion
 
-  // bot.command("me", (ctx) =>
-  //   ctx.reply(`you are ${JSON.stringify(ctx.message.from, null, 2)}`),
-  // );
+  bot.command("me", function userInfo(ctx) {
+    if (ctx.message.from && ctx.message.from.is_bot === false) {
+      const { username, id } = ctx.message.from;
+      return ctx.reply(`You are @${username}, user ID: ${id}`);
+    }
+  });
 
-  // on text message must be one of the last middleware
+  // On any text message, must be one of the last middleware
   bot.on(message("text"), function textMessage(ctx) {
     ctx.reply(
-      `Hello ${ctx.message.from.username}. I'm not sure what does '${ctx.message.text}' means...`,
+      `Hello ${ctx.message.from.username}. I'm not sure what does that means...`,
     );
   });
 
-  // This must be last middleware since it catches any message (but only responds to those with location)
+  // This must be last middleware since it catches any message
+  // (but it only responds to messages with location)
   bot.on(
     "message",
     withAuth(function handleMessageWithLocation(ctx) {

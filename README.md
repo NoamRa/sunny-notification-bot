@@ -23,6 +23,7 @@ The bot sends daily forecast in the morning and update notification if it's sunn
 | `/location lat lon` | Update location with `latitude` and `longitude`, separated by comma. Example `/location 52.521,13.295`.              |
 | `/notifications`    | Change or check notification preferences.                                                                            |
 | `/unsubscribe`      | Delete user data from system                                                                                         |
+| `/me`               | User info                                                                                                            |
 
 Sending location using Telegram app updates your preference.
 
