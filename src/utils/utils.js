@@ -35,3 +35,12 @@ export function hasOwnProp(obj, prop) {
   if (!obj || typeof obj !== "object" || typeof prop !== "string") return false;
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
+
+export function roundTo(digits, number) {
+  if (typeof number !== "number" || typeof digits !== "number") {
+    return NaN; // Return NaN if any of the inputs are not numbers
+  }
+
+  const factor = Math.pow(10, digits);
+  return Math.round(number * factor) / factor;
+}

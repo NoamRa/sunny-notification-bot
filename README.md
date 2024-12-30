@@ -99,3 +99,13 @@ npm start
   node --inspect=0.0.0.0:9229 --max-old-space-size=abc ./src/main.js
   ```
 - Server should appear as remote target. Click inspect to open Chrome DevTools.
+
+#### Tests
+
+Please do. `npm run test` is all you need.
+
+##### Updating mocks
+
+Since tests rely on mocked data, and since sometimes the algorithm changes and we need data in different ways, there's a script called `create-mocks.js` to read historical data from Open-Meteo. Call `npm run create-mocks` to update `openMeteo.mocks.js`.
+
+Adding new mocks can be done by appending to the `DATES_TO_GET` object in `create-mocks.js`.
