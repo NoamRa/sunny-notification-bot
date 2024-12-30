@@ -1,12 +1,12 @@
-import { QueryClient, QueryCache } from "@tanstack/query-core";
+import { QueryCache, QueryClient } from "@tanstack/query-core";
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache(),
 });
 
 import { logger, serialize } from "../logger.js";
-import { formatDate, formatTime } from "../timeUtils/index.js";
-import { clamp, normalizer } from "../utils/index.js";
+import { formatDate, formatTime, hoursDistance } from "../timeUtils/index.js";
+import { clamp, normalizer, roundTo } from "../utils/index.js";
 
 function getWeatherRequest(date, location) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
@@ -14,7 +14,7 @@ function getWeatherRequest(date, location) {
   const params = new URLSearchParams({
     latitude: location.latitude,
     longitude: location.longitude,
-    daily: [], // will add the date to the response
+    daily: ["sunrise", "sunset"],
     minutely_15: [
       "is_day",
       "weathercode",
@@ -57,21 +57,29 @@ export function getSunnyRanges(rawData) {
     directRadiation: rawData.minutely_15.direct_radiation_instant,
     directNormalIrradiance:
       rawData.minutely_15.direct_normal_irradiance_instant,
-  }).filter((item) => item.isDay);
+  });
 
-  const weatherData = minutely15Data.map(({ time, ...item }) => {
-    const score = sunPercent(item);
-    return {
+  const dataWithTime = minutely15Data
+    .filter((item) => item.isDay)
+    .map(({ time, ...item }) => ({
       datetime: time,
       date: formatDate(time),
       time: formatTime(time), // overriding the original time field. That's why it was cloned to datetime
+      sunrise: rawData.daily.sunrise[0],
+      sunset: rawData.daily.sunset[0],
+      ...item,
+    }));
+
+  const weatherData = dataWithTime.map((item) => {
+    const percent = sunPercent(item);
+    return {
       ...item,
       weatherDescription: WEATHER_CODE[item.weatherCode],
-      score,
-      isSunny: isSunny(score),
+      percent,
+      isSunny: isSunny(percent),
     };
   });
-  
+
   const sunnyRanges = sunnyRangeAnalyzer(weatherData).filter(
     ({ length }) => length >= 2,
   );
@@ -82,24 +90,54 @@ export function getSunnyRanges(rawData) {
 /**
  * Given parameters, calculates percent of sunny-ness
  * @param {Object} parameters - Named parameters object.
+ * @param {string} parameters.datetime - Time in ISO 8601
+ * @param {number} parameters.cloudCover - Direct solar radiation on the normal plane (perpendicular to the sun)
+ * @param {string} parameters.sunrise - Sunrise in ISO 8601
+ * @param {string} parameters.sunset - Sunset in ISO 8601
  * @param {number} parameters.directRadiation - Direct solar radiation on the horizontal plane
  * @param {number} parameters.directNormalIrradiance - Direct solar radiation on the normal plane (perpendicular to the sun)
  * Direct normal irradiance values will be greater than direct ration, especially in the winter when the sun is low
- * @returns {number} score in range 0-100
+ * @returns {number} percent in range 0-100
  */
-function sunPercent({ directRadiation, directNormalIrradiance }) {
+function sunPercent(parameters) {
+  const { directRadiation, directNormalIrradiance } = parameters;
   const normalizedDNI = normalizer(25, 150)(directRadiation);
   const normalizedDIN = normalizer(50, 400)(directNormalIrradiance);
-  return clamp(normalizedDNI * normalizedDIN);
+  const factor = sunFactor(parameters);
+
+  const score = normalizedDNI * normalizedDIN * factor;
+
+  const percent = roundTo(2, clamp(score)) * 100;
+
+  return percent;
 }
 
 /**
- * is it sunny logic
+ * Used to improve sun percent on some conditions
+ * @param {Object} parameters - Named parameters object.
+ * @returns {number} factor
+ */
+function sunFactor(parameters) {
+  const { cloudCover, datetime, sunrise, sunset } = parameters;
+
+  let factor = 1;
+  // boost if cloud coverage is low
+  if (cloudCover <= 20) factor += 0.1;
+
+  // boost if close to sunrise / sunset
+  if (hoursDistance(datetime, sunrise) <= 2) factor += 0.1;
+  if (hoursDistance(datetime, sunset) <= 2) factor += 0.1;
+
+  return factor;
+}
+
+/**
+ * Is it sunny logic
  * @param {number} score in range 0-100
  * @returns {boolean}
  */
 function isSunny(score) {
-  return score >= 0.6;
+  return score >= 60;
 }
 
 // #region utils

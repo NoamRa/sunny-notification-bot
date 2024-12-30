@@ -36,3 +36,7 @@ export function resolveDate(value) {
     ? formatDate(dayjs().add(Number(value), "day"))
     : "";
 }
+
+export function hoursDistance(timeA, timeB) {
+  return Math.abs(dayjs(timeA).diff(dayjs(timeB), "hour"));
+}
