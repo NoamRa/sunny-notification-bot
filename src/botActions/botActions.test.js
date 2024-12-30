@@ -65,7 +65,7 @@ describe("Test bot actions (integration tests)", () => {
           mockData: sunny_morning_2023_11_22,
           expected: lines(
             "2023-11-22 - Expect sunny times at:",
-            "09:45 -> 12:45",
+            "09:30 -> 12:45",
           ),
         },
       ],
@@ -75,7 +75,7 @@ describe("Test bot actions (integration tests)", () => {
           mockData: very_sunny_day_2023_11_26,
           expected: lines(
             "2023-11-26 - Expect sunny times at:",
-            "10:00 -> 13:45",
+            "09:45 -> 13:45",
           ),
         },
       ],
@@ -185,14 +185,14 @@ describe("Test bot actions (integration tests)", () => {
         {
           mockNowTime: "2023-11-26T08:55",
           mockData: very_sunny_day_2023_11_26,
-          expected: "",
+          expected: "Expecting sunshine within the hour: 09:45 -> 13:45",
         },
       ],
       [
         {
           mockNowTime: "2023-11-26T09:55",
           mockData: very_sunny_day_2023_11_26,
-          expected: "Expecting sunshine within the hour: 10:00 -> 13:45",
+          expected: "",
         },
       ],
       [
@@ -246,7 +246,7 @@ describe("Test bot actions (integration tests)", () => {
       ],
       // #endregion
     ])(
-      "%#) morning schedule message $mockNowTime",
+      "%#) hourly schedule message $mockNowTime",
       async ({ mockNowTime, mockData, expected }) => {
         vi.setSystemTime(new Date(mockNowTime));
         vi.spyOn(WeatherModule, "getWeather").mockResolvedValue(mockData);
@@ -274,6 +274,7 @@ describe("Test bot actions (integration tests)", () => {
             "expect sunny times at:",
             "10:15 -> 11:00",
             "12:00 -> 12:15",
+            "13:15 -> 13:45",
           ),
         },
       ],
@@ -281,14 +282,14 @@ describe("Test bot actions (integration tests)", () => {
         {
           date: sunny_morning_2023_11_22.daily.time[0],
           mockData: sunny_morning_2023_11_22,
-          expected: lines("expect sunny times at:", "09:45 -> 12:45"),
+          expected: lines("expect sunny times at:", "09:30 -> 12:45"),
         },
       ],
       [
         {
           date: very_sunny_day_2023_11_26.daily.time[0],
           mockData: very_sunny_day_2023_11_26,
-          expected: lines("expect sunny times at:", "10:00 -> 13:45"),
+          expected: lines("expect sunny times at:", "09:45 -> 13:45"),
         },
       ],
       [

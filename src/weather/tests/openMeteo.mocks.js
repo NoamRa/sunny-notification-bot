@@ -1,12 +1,16 @@
 export const sunny_morning_2023_11_13 = {
   daily: {
+    sunrise: ["2023-11-13T07:24"],
+    sunset: ["2023-11-13T16:17"],
     time: ["2023-11-13"],
   },
   daily_units: {
+    sunrise: "iso8601",
+    sunset: "iso8601",
     time: "iso8601",
   },
   elevation: 51,
-  generationtime_ms: 22.044062614440918,
+  generationtime_ms: 0.15401840209960938,
   latitude: 52.52,
   longitude: 13.279999,
   minutely_15: {
@@ -161,13 +165,17 @@ export const sunny_morning_2023_11_13 = {
 
 export const sunny_morning_2023_11_22 = {
   daily: {
+    sunrise: ["2023-11-22T07:40"],
+    sunset: ["2023-11-22T16:05"],
     time: ["2023-11-22"],
   },
   daily_units: {
+    sunrise: "iso8601",
+    sunset: "iso8601",
     time: "iso8601",
   },
   elevation: 51,
-  generationtime_ms: 23.571014404296875,
+  generationtime_ms: 0.18799304962158203,
   latitude: 52.52,
   longitude: 13.279999,
   minutely_15: {
@@ -321,13 +329,17 @@ export const sunny_morning_2023_11_22 = {
 
 export const day_without_sun_2023_11_25 = {
   daily: {
+    sunrise: ["2023-11-25T07:45"],
+    sunset: ["2023-11-25T16:02"],
     time: ["2023-11-25"],
   },
   daily_units: {
+    sunrise: "iso8601",
+    sunset: "iso8601",
     time: "iso8601",
   },
   elevation: 51,
-  generationtime_ms: 7.588982582092285,
+  generationtime_ms: 0.15294551849365234,
   latitude: 52.52,
   longitude: 13.279999,
   minutely_15: {
@@ -479,13 +491,17 @@ export const day_without_sun_2023_11_25 = {
 
 export const very_sunny_day_2023_11_26 = {
   daily: {
+    sunrise: ["2023-11-26T07:47"],
+    sunset: ["2023-11-26T16:01"],
     time: ["2023-11-26"],
   },
   daily_units: {
+    sunrise: "iso8601",
+    sunset: "iso8601",
     time: "iso8601",
   },
   elevation: 51,
-  generationtime_ms: 23.223042488098145,
+  generationtime_ms: 0.16105175018310547,
   latitude: 52.52,
   longitude: 13.279999,
   minutely_15: {
@@ -639,13 +655,17 @@ export const very_sunny_day_2023_11_26 = {
 
 export const sunny_afternoon_2023_11_28 = {
   daily: {
+    sunrise: ["2023-11-28T07:50"],
+    sunset: ["2023-11-28T15:59"],
     time: ["2023-11-28"],
   },
   daily_units: {
+    sunrise: "iso8601",
+    sunset: "iso8601",
     time: "iso8601",
   },
   elevation: 51,
-  generationtime_ms: 0.15604496002197266,
+  generationtime_ms: 0.13005733489990234,
   latitude: 52.52,
   longitude: 13.279999,
   minutely_15: {
@@ -797,15 +817,19 @@ export const sunny_afternoon_2023_11_28 = {
   utc_offset_seconds: 3600,
 };
 
-export const sunny_morning_2024_12_29 = {
+export const slightly_sunny_morning_2024_12_29 = {
   daily: {
+    sunrise: ["2024-12-29T08:17"],
+    sunset: ["2024-12-29T16:00"],
     time: ["2024-12-29"],
   },
   daily_units: {
+    sunrise: "iso8601",
+    sunset: "iso8601",
     time: "iso8601",
   },
   elevation: 51,
-  generationtime_ms: 44.8840856552124,
+  generationtime_ms: 0.14698505401611328,
   latitude: 52.52,
   longitude: 13.279999,
   minutely_15: {
