@@ -5,6 +5,7 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
+    "create-mocks": "node ./src/weather/tests/createMocks.js",
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=128 nodemon ./src/main.js",
     "lint": "eslint src",
     "prepare": "husky install",
