@@ -34,7 +34,7 @@ const DATES_TO_GET = [
   { date: "2023-11-25", name: "day_without_sun_2023_11_25" },
   { date: "2023-11-26", name: "very_sunny_day_2023_11_26" },
   { date: "2023-11-28", name: "sunny_afternoon_2023_11_28" },
-  { date: "2024-12-29", name: "sunny_morning_2024_12_29" },
+  { date: "2024-12-29", name: "slightly_sunny_morning_2024_12_29" },
 ];
 
 // assuming running project root
