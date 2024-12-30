@@ -27,17 +27,8 @@ export function withinTheHour(datetime) {
   return dayjs(datetime).utc().isBetween(now, endOfNextHour, "hour", "(]");
 }
 
-export function isDaytime(sunrise, sunset, datetime) {
-  // inclusive before and after https://day.js.org/docs/en/plugin/is-between
-  return dayjs(datetime).isBetween(sunrise, sunset, "hour", "[]");
-}
-
 export function dateIsValid(date) {
   return dayjs(date, dateFormat, true).isValid();
-}
-
-export function isSameHour(datetime, comparedDatetime) {
-  return dayjs(datetime).hour() === dayjs(comparedDatetime).hour();
 }
 
 export function resolveDate(value) {

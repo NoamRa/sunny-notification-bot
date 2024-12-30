@@ -5,12 +5,7 @@ const queryClient = new QueryClient({
 });
 
 import { logger, serialize } from "../logger.js";
-import {
-  formatDate,
-  formatTime,
-  isDaytime,
-  isSameHour,
-} from "../timeUtils/index.js";
+import { formatDate, formatTime } from "../timeUtils/index.js";
 import { clamp, normalizer } from "../utils/index.js";
 
 function getWeatherRequest(date, location) {
@@ -19,9 +14,11 @@ function getWeatherRequest(date, location) {
   const params = new URLSearchParams({
     latitude: location.latitude,
     longitude: location.longitude,
-    hourly: ["weathercode", "cloudcover"].join(","),
-    daily: ["sunrise", "sunset"].join(","),
+    daily: [], // will add the date to the response
     minutely_15: [
+      "is_day",
+      "weathercode",
+      "cloudcover",
       "direct_radiation_instant",
       "direct_normal_irradiance_instant",
     ].join(","),
@@ -53,56 +50,28 @@ export async function getWeather(date, location) {
 }
 
 export function getSunnyRanges(rawData) {
-  const sunrise = rawData.daily.sunrise[0];
-  const sunset = rawData.daily.sunset[0];
-
-  const daytimeFilter = daytimeFilterGenerator(
-    sunrise,
-    sunset,
-    (item) => item.time,
-  );
-
   const minutely15Data = mapTimes(rawData.minutely_15.time, {
+    isDay: rawData.minutely_15.is_day,
+    cloudCover: rawData.minutely_15.cloudcover,
+    weatherCode: rawData.minutely_15.weathercode,
     directRadiation: rawData.minutely_15.direct_radiation_instant,
     directNormalIrradiance:
       rawData.minutely_15.direct_normal_irradiance_instant,
-  }).filter(daytimeFilter);
+  }).filter((item) => item.isDay);
 
-  const hourlyData = mapTimes(rawData.hourly.time, {
-    cloudCover: rawData.hourly.cloudcover,
-    weatherCode: rawData.hourly.weathercode,
-  }).filter(daytimeFilter);
-
-  const weatherData = minutely15Data
-    .map((minutelyItem) => {
-      const hourlyItem = hourlyData.find(({ time }) => {
-        return isSameHour(minutelyItem.time, time);
-      });
-      if (!hourlyItem) {
-        // shouldn't happen
-        logger.error(
-          `Failed to find hourly item for ${JSON.stringify(minutelyItem)}`,
-        );
-      }
-
-      return {
-        // order is important so `time` values wont' be overridden
-        ...hourlyItem,
-        ...minutelyItem,
-      };
-    })
-    .map(({ time, ...item }) => {
-      const score = sunPercent(item);
-      return {
-        datetime: time,
-        date: formatDate(time),
-        time: formatTime(time), // overriding the original time field. That's why it was cloned to datetime
-        ...item,
-        weatherDescription: WEATHER_CODE[item.weatherCode],
-        score,
-        isSunny: isSunny(score),
-      };
-    });
+  const weatherData = minutely15Data.map(({ time, ...item }) => {
+    const score = sunPercent(item);
+    return {
+      datetime: time,
+      date: formatDate(time),
+      time: formatTime(time), // overriding the original time field. That's why it was cloned to datetime
+      ...item,
+      weatherDescription: WEATHER_CODE[item.weatherCode],
+      score,
+      isSunny: isSunny(score),
+    };
+  });
+  
   const sunnyRanges = sunnyRangeAnalyzer(weatherData).filter(
     ({ length }) => length >= 2,
   );
@@ -143,12 +112,6 @@ function mapTimes(times, fields) {
       {},
     ),
   }));
-}
-
-function daytimeFilterGenerator(sunrise, sunset, getter = (date) => date) {
-  return function daytimeFilter(date) {
-    return isDaytime(sunrise, sunset, getter(date));
-  };
 }
 
 function sunnyRangeAnalyzer(weatherData) {
