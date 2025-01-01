@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg baseProfile="full" height="48px" version="1.1" width="48px" xmlns="http://www.w3.org/2000/svg"
+    xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs />
+    <path d="M24 4 C 12 4, 4 20, 24 44 C 44 20, 36 4, 24 4 Z" fill="#87CEEB" />
+    <circle cx="24px" cy="16px" fill="#FFD700" r="6px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="24px" y1="16px" y2="7px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="24px" y1="16px" y2="25px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="13px" y1="16px" y2="16px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="35px" y1="16px" y2="16px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="17px" y1="16px" y2="10px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="31px" y1="16px" y2="22px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="17px" y1="16px" y2="22px" />
+    <line stroke="#FFD700" stroke-width="2px" x1="24px" x2="31px" y1="16px" y2="10px" />
+</svg>
