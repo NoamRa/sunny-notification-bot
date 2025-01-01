@@ -3,7 +3,9 @@
 Telegram bot that notifies when it's sunny - https://t.me/SunnyNotificationBot
 ![Sunny notification bot demo](docs/notification_example.png)
 
-This bot is still in alpha, and you must be added to allow list in order to interact with it. Feel free to clone and run locally.
+This bot is still in beta, and you must be added to allow list in order to interact with it. Feel free to clone and run locally.
+
+There's also a [web app](https://noamra.github.io/sunny-notification-bot/), but it doesn't send notification.
 
 ### User manual
 
@@ -35,10 +37,19 @@ Missing a feature? Found a bug? Please [create an issue](https://github.com/Noam
 
 ### Run
 
-After [first time setup](#first-time-setup)
+In this repository there are Telegram bot and web app.
+
+After [first time setup](#first-time-setup), run the bot with
 
 ```console
 npm start
+```
+
+or the web app with
+
+```console
+npm run build:web
+npm run preview:web
 ```
 
 ### Develop
@@ -61,12 +72,19 @@ npm start
 
 3. Add the bot's token from [BotFather](https://t.me/botfather) and allowed users
 
-4. To develop, run
+4. To develop the bot, run
+
    ```console
-   npm run dev
+   npm run dev:bot
    ```
 
-#### Steps to run attended
+   or the web app
+
+   ```console
+   npm run dev:web
+   ```
+
+#### Steps to run bot attended
 
 ##### Using `rc.local`
 
@@ -96,9 +114,13 @@ npm start
   match server's IP address ex: `192.168.0.123:9229`.
 - Use the `inspect` option with `0.0.0.0:9229` as host:
   ```sh
-  node --inspect=0.0.0.0:9229 --max-old-space-size=abc ./src/main.js
+  node --inspect=0.0.0.0:9229 --max-old-space-size=abc ./src/bot.js
   ```
 - Server should appear as remote target. Click inspect to open Chrome DevTools.
+
+#### Deploying web app
+
+The web app is deployed to Github pages using merging a PR. It will be live at https://noamra.github.io/sunny-notification-bot/. 
 
 #### Tests
 

@@ -1,6 +1,8 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import marker from "../assets/marker.svg";
+
 const MAP_ID = "map";
 
 const mapContainerEl = document.getElementById("map-container");
@@ -22,7 +24,7 @@ mapContainerEl.appendChild(
   Object.assign(document.createElement("div"), {
     id: "map-marker",
     style: style({
-      "background-image": `url("../assets/marker.svg")`,
+      "background-image": `url("${marker}")`,
       "background-repeat": "no-repeat",
       width: "50px",
       height: "60px",
