@@ -12,8 +12,23 @@
     </header>
     <main>
       <h3 id="result">Wait for it...</h3>
+      <select id="date">
+        <option value="-1">Yesterday</option>
+        <option value="0" selected>Today</option>
+        <option value="1">Tomorrow</option>
+        <option value="2">Overmorrow</option>
+      </select>
       <div id="map-container"></div>
     </main>
+    <footer>
+      <a
+        href="https://github.com/NoamRa/sunny-notification-bot"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        Source on GitHub
+      </a>
+    </footer>
     <script type="module" src="./scripts/main.js"></script>
   </body>
 </html>
