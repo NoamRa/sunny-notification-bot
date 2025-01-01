@@ -23,7 +23,7 @@ import {
   isLocationValid,
   parseLocationString,
 } from "./location/index.js";
-import { logger } from "./logger.js";
+import { logger } from "./logger/index.js";
 import { formatTime } from "./timeUtils/index.js";
 import { lines } from "./utils/index.js";
 import { withAuth } from "./withAuth.js";

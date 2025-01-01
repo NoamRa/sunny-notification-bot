@@ -4,11 +4,11 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache(),
 });
 
-import { logger, serialize } from "../logger.js";
+import { logger, serialize } from "../logger/index.js";
 import { formatDate, formatTime, hoursDistance } from "../timeUtils/index.js";
 import { clamp, normalizer, roundTo } from "../utils/index.js";
 
-function getWeatherRequest(date, location) {
+export function getWeatherRequest(date, location) {
   const url = "https://api.open-meteo.com/v1/dwd-icon";
   const d = formatDate(date);
   const params = new URLSearchParams({

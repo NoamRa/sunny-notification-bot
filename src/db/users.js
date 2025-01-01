@@ -1,4 +1,4 @@
-import { logger, serialize } from "../logger.js";
+import { logger, serialize } from "../logger/index.js";
 import {
   createDefaultNotificationObject,
   updateNotificationsObject,

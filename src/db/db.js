@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { logger } from "../logger.js";
+import { logger } from "../logger/index.js";
 
 export async function DB(dbPath) {
   // basic functions
